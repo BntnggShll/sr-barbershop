@@ -5,7 +5,43 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class reservations extends Model
+class Reservations extends Model
 {
     use HasFactory;
+
+    // Nama tabel jika berbeda dari konvensi
+    protected $table = 'reservations';
+
+    // Menentukan kolom yang dapat diisi
+    protected $fillable = [
+        'user_id',
+        'service_id',
+        'worker_id',
+        'schedule_id',
+        'reservation_status',
+    ];
+
+    // Relasi dengan model User
+    public function user()
+    {
+        return $this->belongsTo(Users::class, 'user_id', 'user_id');
+    }
+
+    // Relasi dengan model Service
+    public function service()
+    {
+        return $this->belongsTo(Services::class, 'service_id', 'service_id');
+    }
+
+    // Relasi dengan model Worker (User)
+    public function worker()
+    {
+        return $this->belongsTo(Users::class, 'worker_id', 'user_id');
+    }
+
+    // Relasi dengan model Schedule
+    public function schedule()
+    {
+        return $this->belongsTo(Schedules::class, 'schedule_id', 'schedule_id');
+    }
 }

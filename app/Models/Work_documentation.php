@@ -5,18 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Tools extends Model
+class Work_documentation extends Model
 {
     use HasFactory;
 
-    // Nama tabel jika berbeda dari konvensi
-    protected $table = 'tools';
+    protected $table = 'work_documentation';
 
     // Menentukan kolom yang dapat diisi
     protected $fillable = [
-        'tool_name',
-        'quantity',
+        'worker_id',
+        'reservation_id',
+        'photo_url',
         'description',
-        'category',
     ];
 }
