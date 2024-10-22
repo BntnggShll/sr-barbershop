@@ -17,7 +17,8 @@ class Services extends Model
         'service_name',
         'description',
         'price',
-        'duration'
+        'duration',
+        'image'
     ];
 
     // Secara opsional, bisa ditambahkan relasi jika ada, misalnya dengan reservasi:

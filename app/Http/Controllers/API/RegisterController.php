@@ -1,13 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\API;
+
 use App\Http\Controllers\Controller;
 use App\Models\Users;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Exception;
-
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class RegisterController extends Controller
 {
@@ -19,9 +20,20 @@ class RegisterController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:6',
-                'phone_number'=>'required|string',
-
+                'phone_number' => 'required|string',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
             ]);
+
+            // Jika validasi gagal, kembalikan pesan error
+            if ($validated->fails()) {
+                return response()->json(['errors' => $validated->errors()], 422);
+            }
+
+            // Menyimpan gambar jika ada
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('images', 'public'); // Menyimpan gambar
+            }
 
             // Membuat user baru
             $user = Users::create([
@@ -32,6 +44,7 @@ class RegisterController extends Controller
                 'role' => 'User',
                 'subscription_status' => 'Tidak Aktif',
                 'points' => 0,
+                'image' => $imagePath, // Menyimpan path gambar di database
             ]);
 
             // Jika berhasil, kembalikan user dan pesan berhasil

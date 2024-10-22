@@ -37,7 +37,6 @@ class Users extends Authenticatable
 
     // Mengatur tipe atribut untuk casting
     protected $casts = [
-        'email_verified_at' => 'datetime',
         'points' => 'integer',
     ];
 }
