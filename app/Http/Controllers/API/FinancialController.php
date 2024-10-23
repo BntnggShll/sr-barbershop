@@ -22,7 +22,7 @@ class FinancialController extends Controller
 
         // Buat data laporan keuangan baru
         $report = Financial_reports::create($validated);
-
+        
         return response()->json([
             'message' => 'Financial report created successfully',
             'report' => $report

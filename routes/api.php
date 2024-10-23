@@ -16,6 +16,7 @@ use App\Http\Controllers\API\ReservationsController;
 use App\Http\Controllers\API\ReviewController;
 use App\Http\Controllers\API\scheduleController;
 use App\Http\Controllers\API\WorkDocumentationController;
+use App\Http\Controllers\API\UserController;
 
 // Route untuk mendapatkan user, dengan middleware auth sanctum
 Route::get('/user', function (Request $request) {
@@ -87,13 +88,19 @@ Route::post('/schedules', [ScheduleController::class, 'store']);
 Route::put('/schedules/{id}', [ScheduleController::class, 'update']);
 Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy']);
 // services
-Route::get('/services', [ServiceController::class, 'index']);
+Route::get('/service', [ServiceController::class, 'index']);
 Route::get('/services/{id}', [ServiceController::class, 'show']);
 Route::post('/services', [ServiceController::class, 'store']);
 Route::put('/services/{id}', [ServiceController::class, 'update']);
 Route::delete('/services/{id}', [ServiceController::class, 'destroy']);
 // work-documentation
 Route::apiResource('work-documentation', WorkDocumentationController::class);
+// User
+Route::get('/admin', [UserController::class, 'admin']);
+Route::get('/user', [UserController::class, 'user']);
+Route::get('/pekerja', [UserController::class, 'pekerja']);
+Route::delete('/user/{id}', [UserController::class, 'destroy']);
+
 
 
 

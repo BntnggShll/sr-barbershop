@@ -18,21 +18,14 @@ class RegisterController extends Controller
             // Validasi input pengguna
             $validated = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:6',
+                'email' => 'required|string|max:255|unique:users',
+                'password' => 'required|string',
                 'phone_number' => 'required|string',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
             ]);
 
             // Jika validasi gagal, kembalikan pesan error
             if ($validated->fails()) {
                 return response()->json(['errors' => $validated->errors()], 422);
-            }
-
-            // Menyimpan gambar jika ada
-            $imagePath = null;
-            if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('images', 'public'); // Menyimpan gambar
             }
 
             // Membuat user baru
@@ -44,7 +37,6 @@ class RegisterController extends Controller
                 'role' => 'User',
                 'subscription_status' => 'Tidak Aktif',
                 'points' => 0,
-                'image' => $imagePath, // Menyimpan path gambar di database
             ]);
 
             // Jika berhasil, kembalikan user dan pesan berhasil

@@ -31,14 +31,16 @@ class ServiceController extends Controller
 
         return response()->json([
             'message' => 'Service created successfully',
-            'service' => $service
+            'service' => $service,
+            'success'=> true
         ], 201);
     }
     // Menampilkan semua data layanan
     public function index()
     {
         $services = Services::all();
-        return response()->json($services);
+        return response()->json(['success' => true, 'data' => $services]);
+        
     }
 
     // Menampilkan data layanan berdasarkan ID
@@ -50,7 +52,7 @@ class ServiceController extends Controller
             return response()->json(['message' => 'Service not found'], 404);
         }
 
-        return response()->json($service);
+        return response()->json(['success' => true, 'data' => $service]);
     }
     public function update(Request $request, $id)
     {
@@ -83,7 +85,8 @@ class ServiceController extends Controller
 
         return response()->json([
             'message' => 'Service updated successfully',
-            'service' => $service
+            'service' => $service,
+            'success'=> true
         ]);
     }
     public function destroy($id)

@@ -26,7 +26,8 @@ class Users extends Authenticatable
         'role',
         'subscription_status',
         'points',
-        'google_id'
+        'google_id',
+        'image'
     ];
 
     // Mengatur atribut yang harus di-hash
