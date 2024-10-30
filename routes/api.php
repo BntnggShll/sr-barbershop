@@ -17,17 +17,13 @@ use App\Http\Controllers\API\ReviewController;
 use App\Http\Controllers\API\scheduleController;
 use App\Http\Controllers\API\WorkDocumentationController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\RegisterPekerjaController;
 
-// Route untuk mendapatkan user, dengan middleware auth sanctum
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
 
-// Grouping rute API untuk login dan service
-Route::middleware('api')->group(function () {
+
     Route::post('/login', [LoginController::class, 'store']);
     Route::post('/register', [RegisterController::class, 'register']);
-});
+Route::post('/registerpekerja',[RegisterPekerjaController::class,'registerpekerja']);
 
 Route::get('auth/google', [LoginGoogleController::class, 'redirectToGoogle'])
     ->middleware(EnsureTokenIsValid::class);

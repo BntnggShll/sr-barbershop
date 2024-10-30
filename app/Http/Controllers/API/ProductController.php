@@ -11,35 +11,41 @@ class ProductController extends Controller
 {
     public function store(Request $request)
     {
-        // Validasi input
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
-        ]);
+        // Ambil inputan dari request tanpa validasi otomatis
+        $name = $request->input('name');
+        $description = $request->input('description');
+        $price = $request->input('price');
+        $stock = $request->input('stock');
+        $imagePath = null;
+
 
         // Menyimpan gambar jika ada
-        $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('images', 'public'); // Menyimpan gambar di folder public/images
+            $imagePath = $request->file('image')->store('images', 'public');
         }
 
-        // Buat data product baru
-        $product = Products::create(array_merge($validated, ['image' => $imagePath]));
+        // Buat data product baru tanpa validator
+        $product = Products::create([
+            'name' => $name,
+            'description' => $description,
+            'price' => $price,
+            'stock' => $stock,
+            'image' => $imagePath
+        ]);
 
         return response()->json([
             'message' => 'Product created successfully',
-            'product' => $product
+            'product' => $product,
+            'success' => true
         ], 201);
     }
+
 
     // Menampilkan semua data products
     public function index()
     {
-        $products = Products::all();
-        return response()->json($products);
+        $product = Products::all();
+        return response()->json(['product' => $product, 'success' => true]);
     }
 
     // Menampilkan data product berdasarkan ID
@@ -48,7 +54,7 @@ class ProductController extends Controller
         $product = Products::find($id);
 
         if (!$product) {
-            return response()->json(['message' => 'Product not found'], 404);
+            return response()->json(['message' => 'Product not found',], 404);
         }
 
         return response()->json($product);
@@ -59,7 +65,9 @@ class ProductController extends Controller
         $product = Products::find($id);
 
         if (!$product) {
-            return response()->json(['message' => 'Product not found'], 404);
+            return response()->json([
+                'message' => 'Product not found'
+            ], 404);
         }
 
         // Validasi input

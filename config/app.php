@@ -123,4 +123,11 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'aliases' => [
+    // Alias lain
+    'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+    'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
+],
+
+
 ];

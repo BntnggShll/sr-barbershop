@@ -27,7 +27,7 @@ class Users extends Authenticatable
         'subscription_status',
         'points',
         'google_id',
-        'image'
+        'image',
     ];
 
     // Mengatur atribut yang harus di-hash

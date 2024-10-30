@@ -3,17 +3,14 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\Users;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Firebase\JWT\JWT;
-use Carbon\Carbon;
 use Exception;
-use Illuminate\Http\Request;
-
-class RegisterController extends Controller
+use Illuminate\Support\Facades\Validator;
+class RegisterPekerjaController extends Controller
 {
-    public function register(Request $request)
+    public function registerpekerja(Request $request)
     {
         try {
             // Validasi input pengguna
@@ -34,34 +31,15 @@ class RegisterController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone_number' => $request->phone_number,
-                'password' => Hash::make($request->password), // Hash password
-                'role' => 'User',
+                'password' => Hash::make($request->password),
+                'role' => 'Pekerja',
                 'subscription_status' => 'Tidak Aktif',
                 'points' => 0,
             ]);
 
-            // Payload untuk JWT dengan semua data pengguna
-            $payload = [
-                'iss' => "http://localhost:3000/register", // Ganti dengan issuer Anda
-                'sub' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'phone_number' => $user->phone_number,
-                'role' => $user->role,
-                'subscription_status' => $user->subscription_status,
-                'points' => $user->points,
-                'iat' => Carbon::now()->timestamp,
-                'exp' => Carbon::now()->addHours(2)->timestamp, // Token berlaku selama 2 jam
-            ];
-
-            // Generate JWT
-            $jwtSecretKey = env('JWT_SECRET'); // Pastikan untuk menyimpan secret key di .env
-            $token = JWT::encode($payload, $jwtSecretKey, 'HS256');
-
-            // Kirim respons dengan token JWT
+            // Jika berhasil, kembalikan user dan pesan berhasil
             return response()->json([
                 'message' => 'User registered successfully',
-                'token' => $token,
                 'user' => $user
             ], 201);
 
@@ -69,7 +47,7 @@ class RegisterController extends Controller
             // Menangkap error dan mengirimkan pesan error yang jelas
             return response()->json([
                 'message' => 'Registration failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage()  // Mengembalikan pesan error untuk debugging
             ], 500);
         }
     }

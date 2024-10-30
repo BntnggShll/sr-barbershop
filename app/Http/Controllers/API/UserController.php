@@ -29,7 +29,7 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'users retrieved successfully',
-            'User' => $user,
+            'data' => $user,
             'success'=> true
         ], 200);
     }
@@ -46,9 +46,12 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function destroy($id)
-    {
-        $Users = Users::find($id);
+    public function destroy($user_id)
+    {   
+
+
+        
+        $Users = Users::find($user_id);
 
         if (!$Users) {
             return response()->json(['message' => 'Users not found'], 404);
