@@ -11,6 +11,7 @@ class Services extends Model
 
     // Nama tabel yang terkait dengan model ini
     protected $table = 'services';
+    protected $primaryKey = 'service_id';
 
     // Kolom-kolom yang dapat diisi (mass assignable)
     protected $fillable = [
@@ -18,12 +19,8 @@ class Services extends Model
         'description',
         'price',
         'duration',
-        'image'
+        'image',
     ];
 
-    // Secara opsional, bisa ditambahkan relasi jika ada, misalnya dengan reservasi:
-    public function reservations()
-    {
-        return $this->hasMany(Reservations::class, 'service_id', 'service_id');
-    }
+
 }

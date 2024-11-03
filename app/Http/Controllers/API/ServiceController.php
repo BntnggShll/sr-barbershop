@@ -31,7 +31,7 @@ class ServiceController extends Controller
 
         return response()->json([
             'message' => 'Service created successfully',
-            'service' => $service,
+            'data' => $service,
             'success'=> true
         ], 201);
     }
@@ -85,7 +85,7 @@ class ServiceController extends Controller
 
         return response()->json([
             'message' => 'Service updated successfully',
-            'service' => $service,
+            'data' => $service,
             'success'=> true
         ]);
     }
@@ -97,12 +97,9 @@ class ServiceController extends Controller
             return response()->json(['message' => 'Service not found'], 404);
         }
 
-        // Hapus gambar yang terkait jika ada
         if ($service->image) {
             Storage::delete('public/' . $service->image);
         }
-
-        // Hapus data layanan
         $service->delete();
 
         return response()->json(['message' => 'Service deleted successfully']);

@@ -48,9 +48,6 @@ class UserController extends Controller
 
     public function destroy($user_id)
     {   
-
-
-        
         $Users = Users::find($user_id);
 
         if (!$Users) {

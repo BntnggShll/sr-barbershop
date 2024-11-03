@@ -60,9 +60,9 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $product_id)
     {
-        $product = Products::find($id);
+        $product = Products::find($product_id);
 
         if (!$product) {
             return response()->json([
@@ -72,11 +72,11 @@ class ProductController extends Controller
 
         // Validasi input
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'string|max:255',
             'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
+            'price' => 'numeric|min:0',
+            'stock' => 'integer|min:0',
+            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
         ]);
 
         // Menyimpan gambar jika ada
