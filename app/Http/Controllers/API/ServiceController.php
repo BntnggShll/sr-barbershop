@@ -31,16 +31,35 @@ class ServiceController extends Controller
 
         return response()->json([
             'message' => 'Service created successfully',
-            'data' => $service,
-            'success'=> true
+            'data' => [
+                'service_name' => $service->service_name,
+                'description' => $service->description,
+                'price' => $service->price,
+                'duration' => $service->duration,
+                'image' => asset('storage/' . $service->service_images),
+            ],
+            'success' => true
         ], 201);
     }
     // Menampilkan semua data layanan
     public function index()
     {
         $services = Services::all();
-        return response()->json(['success' => true, 'data' => $services]);
-        
+
+        $data = $services->map(function ($service) {
+            return [
+                'service_name' => $service->service_name,
+                'description' => $service->description,
+                'price' => $service->price,
+                'duration' => $service->duration,
+                'image' => asset('storage/'. $service->image),
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ]);
     }
 
     // Menampilkan data layanan berdasarkan ID
@@ -65,7 +84,7 @@ class ServiceController extends Controller
         // Validasi input
         $validated = $request->validate([
             'service_name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'required|nullable|string',
             'price' => 'required|numeric',
             'duration' => 'required|integer',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -86,7 +105,7 @@ class ServiceController extends Controller
         return response()->json([
             'message' => 'Service updated successfully',
             'data' => $service,
-            'success'=> true
+            'success' => true
         ]);
     }
     public function destroy($id)

@@ -72,7 +72,7 @@ class ProductController extends Controller
 
         // Validasi input
         $validated = $request->validate([
-            'name' => 'string|max:255',
+            'name' => ' string|max:255',
             'description' => 'nullable|string',
             'price' => 'numeric|min:0',
             'stock' => 'integer|min:0',

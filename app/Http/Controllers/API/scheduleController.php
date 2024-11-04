@@ -12,7 +12,6 @@ class scheduleController extends Controller
     {
         // Validasi input
         $validated = $request->validate([
-            'worker_id' => 'required|exists:users,user_id',
             'available_date' => 'required|date',
             'available_time_start' => 'required|date_format:H:i',
             'available_time_end' => 'required|date_format:H:i',
@@ -31,7 +30,7 @@ class scheduleController extends Controller
     public function index()
     {
         $schedules = Schedules::all();
-        return response()->json($schedules);
+        return response()->json(['schedule' => $schedules]);
     }
 
     // Menampilkan data schedule berdasarkan ID
@@ -55,7 +54,6 @@ class scheduleController extends Controller
 
         // Validasi input
         $validated = $request->validate([
-            'worker_id' => 'required|exists:users,user_id',
             'available_date' => 'required|date',
             'available_time_start' => 'required|date_format:H:i',
             'available_time_end' => 'required|date_format:H:i',
