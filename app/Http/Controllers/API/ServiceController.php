@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Services;
 use Illuminate\Support\Facades\Storage;
 
-
 class ServiceController extends Controller
 {
     public function store(Request $request)
@@ -23,7 +22,8 @@ class ServiceController extends Controller
 
         // Simpan gambar (opsional)
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('service_images', 'public');
+            $imagePath = $request->file('image')->store('service_images', 'public');
+            $validated['image'] = $imagePath;
         }
 
         // Buat service baru
@@ -32,15 +32,17 @@ class ServiceController extends Controller
         return response()->json([
             'message' => 'Service created successfully',
             'data' => [
+                'service_id'=> $service->service_id,
                 'service_name' => $service->service_name,
                 'description' => $service->description,
                 'price' => $service->price,
                 'duration' => $service->duration,
-                'image' => asset('storage/' . $service->service_images),
+                'image' => isset($imagePath) ? asset('storage/' . $imagePath) : null,
             ],
             'success' => true
         ], 201);
     }
+
     // Menampilkan semua data layanan
     public function index()
     {
@@ -48,11 +50,12 @@ class ServiceController extends Controller
 
         $data = $services->map(function ($service) {
             return [
+                'service_id'=> $service->service_id,
                 'service_name' => $service->service_name,
                 'description' => $service->description,
                 'price' => $service->price,
                 'duration' => $service->duration,
-                'image' => asset('storage/'. $service->image),
+                'image' => $service->image ? asset('storage/' . $service->image) : null,
             ];
         });
 
@@ -71,8 +74,19 @@ class ServiceController extends Controller
             return response()->json(['message' => 'Service not found'], 404);
         }
 
-        return response()->json(['success' => true, 'data' => $service]);
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'service_id'=> $service->service_id,
+                'service_name' => $service->service_name,
+                'description' => $service->description,
+                'price' => $service->price,
+                'duration' => $service->duration,
+                'image' => $service->image ? asset('storage/' . $service->image) : null,
+            ]
+        ]);
     }
+
     public function update(Request $request, $id)
     {
         $service = Services::find($id);
@@ -84,7 +98,7 @@ class ServiceController extends Controller
         // Validasi input
         $validated = $request->validate([
             'service_name' => 'required|string|max:255',
-            'description' => 'required|nullable|string',
+            'description' => 'nullable|string',
             'price' => 'required|numeric',
             'duration' => 'required|integer',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -93,21 +107,29 @@ class ServiceController extends Controller
         // Simpan gambar baru (opsional)
         if ($request->hasFile('image')) {
             if ($service->image) {
-                // Hapus gambar lama
                 Storage::delete('public/' . $service->image);
             }
-            $validated['image'] = $request->file('image')->store('service_images', 'public');
+            $imagePath = $request->file('image')->store('service_images', 'public');
+            $validated['image'] = $imagePath;
         }
 
         // Update data layanan
-        $service->update($validated);
+        $service->update(array_merge($validated, ['image' => $imagePath ?? $service->image]));
 
         return response()->json([
             'message' => 'Service updated successfully',
-            'data' => $service,
+            'data' => [
+                'service_id'=> $service->service_id,
+                'service_name' => $service->service_name,
+                'description' => $service->description,
+                'price' => $service->price,
+                'duration' => $service->duration,
+                'image' => $service->image ? asset('storage/' . $service->image) : null,
+            ],
             'success' => true
         ]);
     }
+
     public function destroy($id)
     {
         $service = Services::find($id);
@@ -123,5 +145,4 @@ class ServiceController extends Controller
 
         return response()->json(['message' => 'Service deleted successfully']);
     }
-
 }

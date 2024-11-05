@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Products;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
 
 class ProductController extends Controller
 {
@@ -45,7 +46,20 @@ class ProductController extends Controller
     public function index()
     {
         $product = Products::all();
-        return response()->json(['product' => $product, 'success' => true]);
+        $data = $product->map(function ($product) {
+            return [
+                'product_id' => $product->product_id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'price' => $product->price,
+                'stock' => $product->stock,
+                'image' => asset('storage/' . $product->image),
+            ];
+        });
+        return response()->json([
+            'success' => true,
+            'product' => $data,
+        ]);
     }
 
     // Menampilkan data product berdasarkan ID
@@ -66,38 +80,42 @@ class ProductController extends Controller
 
         if (!$product) {
             return response()->json([
-                'message' => 'Product not found'
+                'message' => 'Product not found',
+                'success' => false
             ], 404);
         }
-
-        // Validasi input
         $validated = $request->validate([
-            'name' => ' string|max:255',
+            'name' => 'string|max:255',
             'description' => 'nullable|string',
             'price' => 'numeric|min:0',
             'stock' => 'integer|min:0',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
+            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
-        // Menyimpan gambar jika ada
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika perlu
             if ($product->image) {
                 Storage::delete('public/' . $product->image);
             }
             // Simpan gambar baru
             $imagePath = $request->file('image')->store('images', 'public');
-            $validated['image'] = $imagePath; // Tambahkan path gambar baru ke validasi
+            $validated['image'] = $imagePath;
         }
-
-        // Update data product
-        $product->update($validated);
+        $product->update(array_merge($validated, ['image' => $imagePath ?? $product->image]));
+        $data = [
+            'product_id' => $product->product_id,
+            'name' => $product->name,
+            'description' => $product->description,
+            'price' => $product->price,
+            'stock' => $product->stock,
+            'image' => asset('storage/' . $product->image),
+        ];
 
         return response()->json([
-            'message' => 'Product updated successfully',
-            'product' => $product
+            'success' => true,
+            'product' => $data,
         ]);
     }
+
+
 
     public function destroy($id)
     {

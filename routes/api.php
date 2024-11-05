@@ -57,7 +57,7 @@ Route::delete('/payments/{id}', [PaymentController::class, 'destroy']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::post('/products', [ProductController::class, 'store']);
-Route::put('/products/{id}', [ProductController::class, 'update']);
+Route::post('/products/{id}', [ProductController::class, 'update']);
 Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 // product-sales
 Route::get('/product-sales', [ProductSaleController::class, 'index']);
@@ -87,7 +87,7 @@ Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy']);
 Route::get('/services', [ServiceController::class, 'index']);
 Route::get('/services/{id}', [ServiceController::class, 'show']);
 Route::post('/services', [ServiceController::class, 'store']);
-Route::put('/services/{id}', [ServiceController::class, 'update']);
+Route::post('/services/{id}', [ServiceController::class, 'update']);
 Route::delete('/services/{id}', [ServiceController::class, 'destroy']);
 // work-documentation
 Route::apiResource('work-documentation', WorkDocumentationController::class);
