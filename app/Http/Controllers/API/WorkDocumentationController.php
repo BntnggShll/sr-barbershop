@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Users;
 use App\Models\Work_documentation;
 use Illuminate\Http\Request;
+use Illuminate\Queue\Worker;
 use Illuminate\Support\Facades\Storage;
 
 class WorkDocumentationController extends Controller
@@ -13,80 +15,116 @@ class WorkDocumentationController extends Controller
     public function index()
     {
         $documentations = Work_documentation::all();
-        foreach ($documentations as $documentation) {
-            $documentation->photo_url = Storage::url($documentation->photo_url); // Mendapatkan URL akses gambar
-        }
-        return response()->json($documentations);
+        $data = $documentations->map(function ($documentations) {
+            return [
+                'documentation_id' => $documentations->documentation_id,
+                'worker_id' => $documentations->worker_id,
+                'reservation_id' => $documentations->reservation_id,
+                'description' => $documentations->description,
+                'photo_url' => asset('storage/' . $documentations->photo_url),
+            ];
+        });
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ]);
     }
 
-    // Menyimpan dokumentasi kerja baru
     public function store(Request $request)
     {
-        $request->validate([
-            'worker_id' => 'required|exists:users,user_id',
-            'reservation_id' => 'required|exists:reservations,reservation_id',
-            'photo_url' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
-            'description' => 'nullable|string',
-        ]);
 
-        // Menyimpan gambar ke storage
-        $path = $request->file('photo_url')->store('images', 'public'); // Menyimpan gambar di folder public/images
+        $path = $request->file('photo_url')->store('documentation', 'public');
 
-        // Membuat dokumentasi kerja baru
         $documentation = Work_documentation::create([
             'worker_id' => $request->worker_id,
             'reservation_id' => $request->reservation_id,
-            'photo_url' => $path, // Menyimpan path gambar di database
+            'photo_url' => $path,
             'description' => $request->description,
         ]);
 
-        return response()->json($documentation, 201);
+        $data = [
+            'documentation_id' => $documentation->documentation_id,
+            'worker_id' => $documentation->worker_id,
+            'reservation_id' => $documentation->reservation_id,
+            'description' => $documentation->description,
+            'photo_url' => asset('storage/' . $documentation->photo_url),
+        ];
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ], 201);
     }
 
-    // Menampilkan dokumentasi kerja berdasarkan ID
     public function show($id)
     {
         $documentation = Work_documentation::findOrFail($id);
-        $documentation->photo_url = Storage::url($documentation->photo_url); // Mendapatkan URL akses gambar
-        return response()->json($documentation);
+
+        $data = [
+            'documentation_id' => $documentation->documentation_id,
+            'worker_id' => $documentation->worker_id,
+            'reservation_id' => $documentation->reservation_id,
+            'description' => $documentation->description,
+            'photo_url' => asset('storage/' . $documentation->photo_url),
+        ];
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ]);
     }
 
-    // Mengupdate dokumentasi kerja
     public function update(Request $request, $id)
     {
         $documentation = Work_documentation::findOrFail($id);
 
-        $request->validate([
-            'worker_id' => 'sometimes|exists:users,user_id',
-            'reservation_id' => 'sometimes|exists:reservations,reservation_id',
-            'photo_url' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
-            'description' => 'nullable|string',
-        ]);
+        // $request->validate([
+        //     'worker_id' => 'sometimes|exists:users,user_id',
+        //     'reservation_id' => 'sometimes|exists:reservations,reservation_id',
+        //     'photo_url' => 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048',
+        //     'description' => 'nullable|string',
+        // ]);
 
         if ($request->hasFile('photo_url')) {
-            // Hapus gambar lama jika ada
-            Storage::delete($documentation->photo_url);
-            // Menyimpan gambar baru
-            $path = $request->file('photo_url')->store('images', 'public');
-            $documentation->photo_url = $path; // Menyimpan path gambar baru di database
+            if ($documentation->photo_url) {
+                Storage::delete($documentation->photo_url);
+            }
+            $path = $request->file('photo_url')->store('documentation', 'public');
+            $documentation->photo_url = $path;
         }
 
-        // Update kolom lainnya
         $documentation->worker_id = $request->worker_id ?? $documentation->worker_id;
         $documentation->reservation_id = $request->reservation_id ?? $documentation->reservation_id;
         $documentation->description = $request->description ?? $documentation->description;
 
         $documentation->save();
 
-        return response()->json($documentation);
+        $data = [
+            'documentation_id' => $documentation->documentation_id,
+            'worker_id' => $documentation->worker_id,
+            'reservation_id' => $documentation->reservation_id,
+            'description' => $documentation->description,
+            'photo_url' => asset('storage/' . $documentation->photo_url),
+        ];
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ]);
     }
+
 
     // Menghapus dokumentasi kerja
     public function destroy($id)
     {
         $documentation = Work_documentation::findOrFail($id);
+
         // Hapus gambar dari storage
-        Storage::delete($documentation->photo_url);
+        if ($documentation->photo_url) {
+            Storage::delete($documentation->photo_url);
+        }
+
+        // Hapus dokumentasi
         $documentation->delete();
 
         return response()->json(null, 204);

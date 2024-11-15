@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Reservations;    
+use App\Models\Reservations;
 
 class ReservationsController extends Controller
 {
@@ -30,9 +30,12 @@ class ReservationsController extends Controller
     // Menampilkan semua data reservasi
     public function index()
     {
-        $reservations = Reservations::all();
-        return response()->json($reservations);
+        $reservations = Reservations::with('service')->get();
+
+        // Mengembalikan data dalam format JSON
+        return response()->json(['data' => $reservations]);
     }
+
 
     // Menampilkan data reservasi berdasarkan ID
     public function show($id)

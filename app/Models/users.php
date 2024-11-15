@@ -40,4 +40,6 @@ class Users extends Authenticatable
     protected $casts = [
         'points' => 'integer',
     ];
+
+    
 }

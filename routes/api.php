@@ -69,7 +69,7 @@ Route::delete('/product-sales/{id}', [ProductSaleController::class, 'destroy']);
 Route::get('/reservations', [ReservationsController::class, 'index']);
 Route::get('/reservations/{id}', [ReservationsController::class, 'show']);
 Route::post('/reservations', [ReservationsController::class, 'store']);
-Route::put('/reservations/{id}', [ReservationsController::class, 'update']);
+Route::post('/reservations/{id}', [ReservationsController::class, 'update']);
 Route::delete('/reservations/{id}', [ReservationsController::class, 'destroy']);
 // reviews
 Route::get('/reviews', [ReviewController::class, 'index']);
@@ -90,7 +90,11 @@ Route::post('/services', [ServiceController::class, 'store']);
 Route::post('/services/{id}', [ServiceController::class, 'update']);
 Route::delete('/services/{id}', [ServiceController::class, 'destroy']);
 // work-documentation
-Route::apiResource('work-documentation', WorkDocumentationController::class);
+Route::get('/work_documentation', [WorkDocumentationController::class, 'index']);
+Route::get('/work_documentation/{id}', [WorkDocumentationController::class, 'show']);
+Route::post('/work_documentation', [WorkDocumentationController::class, 'store']);
+Route::post('/work_documentation/{id}', [WorkDocumentationController::class, 'update']);
+Route::delete('/work_documentation/{id}', [WorkDocumentationController::class, 'destroy']);
 // User
 Route::get('/admin', [UserController::class, 'admin']);
 Route::get('/user', [UserController::class, 'user']);

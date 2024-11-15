@@ -11,6 +11,8 @@ class Work_documentation extends Model
 
     protected $table = 'work_documentation';
 
+    protected $primaryKey ='documentation_id';
+
     // Menentukan kolom yang dapat diisi
     protected $fillable = [
         'worker_id',
@@ -18,4 +20,14 @@ class Work_documentation extends Model
         'photo_url',
         'description',
     ];
+
+    // Relasi ke tabel users
+    public function worker()
+    {
+        return $this->belongsTo(Users::class, 'worker_id', 'user_id');
+    }
+    public function reservation()
+    {
+        return $this->belongsTo(Reservations::class, 'reservation_id', 'reservation_id');
+    }
 }
