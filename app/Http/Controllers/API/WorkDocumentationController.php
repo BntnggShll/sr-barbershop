@@ -14,7 +14,7 @@ class WorkDocumentationController extends Controller
     // Menampilkan semua dokumentasi kerja
     public function index()
     {
-        $documentations = Work_documentation::all();
+        $documentations = Work_documentation::with('worker')->get();
         $data = $documentations->map(function ($documentations) {
             return [
                 'documentation_id' => $documentations->documentation_id,
@@ -22,6 +22,7 @@ class WorkDocumentationController extends Controller
                 'reservation_id' => $documentations->reservation_id,
                 'description' => $documentations->description,
                 'photo_url' => asset('storage/' . $documentations->photo_url),
+                'worker'=>$documentations->worker,
             ];
         });
         return response()->json([

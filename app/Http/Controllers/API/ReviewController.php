@@ -10,17 +10,9 @@ class ReviewController extends Controller
 {
     public function store(Request $request)
     {
-        // Validasi input
-        $validated = $request->validate([
-            'reservation_id' => 'required|exists:reservations,reservation_id',
-            'user_id' => 'required|exists:users,user_id',
-            'worker_id' => 'required|exists:users,user_id',
-            'rating' => 'required|integer|min:1|max:5',
-            'feedback' => 'nullable|string',
-        ]);
 
         // Buat review baru
-        $review = Review::create($validated);
+        $review = Review::create($request);
 
         return response()->json([
             'message' => 'Review created successfully',
@@ -30,7 +22,8 @@ class ReviewController extends Controller
     // Menampilkan semua data review
     public function index()
     {
-        $reviews = Review::all();
+        $reviews = Review::with(['user','worker'])->get();
+        
         return response()->json($reviews);
     }
 
