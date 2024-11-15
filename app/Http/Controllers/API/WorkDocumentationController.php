@@ -33,7 +33,7 @@ class WorkDocumentationController extends Controller
     public function store(Request $request)
     {
 
-        $path = $request->file('photo_url')->store('documentation', 'public');
+        $path = $request->file('photo_url')?$request->file('photo_url')->store('documentation', 'public'):null;
 
         $documentation = Work_documentation::create([
             'worker_id' => $request->worker_id,
