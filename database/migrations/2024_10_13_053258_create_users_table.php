@@ -21,6 +21,7 @@ return new class extends Migration
         $table->enum('subscription_status', ['Aktif', 'Tidak Aktif'])->default('Tidak Aktif');
         $table->integer('points')->default(0);
         $table->timestamps();
+        $table->string('image')->nullable();
     });
     }
 

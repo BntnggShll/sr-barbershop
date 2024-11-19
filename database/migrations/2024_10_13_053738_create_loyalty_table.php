@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('loyalty', function (Blueprint $table) {
         $table->id('loyalty_id');
-        $table->foreignId('user_id')->references('user_id')->on('users')->onDelete('cascade');
+        $table->foreignId('user_id')->references('user_id')->on('users')->onDelete('cascade')->nullable();
         $table->integer('points_earned');
         $table->integer('points_redeemed')->default(0);
         $table->integer('discount_percentage')->default(0);

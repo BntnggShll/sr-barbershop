@@ -13,11 +13,17 @@ class Schedules extends Model
     protected $table = 'schedules';
 
     // Menentukan kolom yang dapat diisi
-    protected $fillable = [
-        'available_date',
-        'available_time_start',
-        'available_time_end',
-        'status',
-    ];
-
+    // protected $fillable = [
+    //     'worker_id',
+    //     'available_date',
+    //     'available_time_start',
+    //     'available_time_end',
+    //     'status',
+    // ];
+    protected $guarded = [];   
+    
+    public function worker()
+    {
+        return $this->belongsTo(Users::class, 'worker_id', 'user_id');
+    }
 }

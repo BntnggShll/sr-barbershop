@@ -81,7 +81,7 @@ Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
 Route::get('/schedules', [ScheduleController::class, 'index']);
 Route::get('/schedules/{id}', [ScheduleController::class, 'show']);
 Route::post('/schedules', [ScheduleController::class, 'store']);
-Route::put('/schedules/{id}', [ScheduleController::class, 'update']);
+Route::post('/schedules/{id}', [ScheduleController::class, 'update']);
 Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy']);
 // services
 Route::get('/services', [ServiceController::class, 'index']);

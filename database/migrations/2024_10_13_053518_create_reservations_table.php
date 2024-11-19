@@ -13,10 +13,10 @@ return new class extends Migration
     {
          Schema::create('reservations', function (Blueprint $table) {
         $table->id('reservation_id');
-        $table->foreignId('user_id')->references('user_id')->on('users')->onDelete('cascade');
-        $table->foreignId('service_id')->references('service_id')->on('services')->onDelete('cascade');;
-        $table->foreignId('worker_id')->references('user_id')->on('users')->onDelete('cascade');
-        $table->foreignId('schedule_id')->references('schedule_id')->on('schedules')->onDelete('cascade');
+        $table->foreignId('user_id')->references('user_id')->on('users')->onDelete('cascade')->nullable();
+        $table->foreignId('service_id')->references('service_id')->on('services')->onDelete('cascade')->nullable();
+        $table->foreignId('worker_id')->references('user_id')->on('users')->onDelete('cascade')->nullable();
+        $table->foreignId('schedule_id')->references('schedule_id')->on('schedules')->onDelete('cascade')->nullable();
         $table->enum('reservation_status', ['Pending', 'Confirmed', 'Completed', 'Canceled']);
         $table->timestamps();
     });

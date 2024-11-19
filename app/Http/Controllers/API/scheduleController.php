@@ -5,31 +5,27 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Schedules;
+use Illuminate\Queue\Worker;
 
 class scheduleController extends Controller
 {
     public function store(Request $request)
     {
-        // Validasi input
-        $validated = $request->validate([
-            'available_date' => 'required|date',
-            'available_time_start' => 'required|date_format:H:i',
-            'available_time_end' => 'required|date_format:H:i',
-            'status' => 'required|in:Available,Booked,Unavailable',
-        ]);
 
         // Buat schedule baru
-        $schedule = Schedules::create($validated);
+        $schedule = Schedules::create($request->all());
+        $schedule->worker->name; 
 
         return response()->json([
             'message' => 'Schedule created successfully',
-            'schedule' => $schedule
+            'schedule' => $schedule,
+            // 'worker' => $worker,
         ], 201);
     }
     // Menampilkan semua data schedule
     public function index()
     {
-        $schedules = Schedules::all();
+        $schedules = Schedules::with('worker')->get();
         return response()->json(['schedule' => $schedules]);
     }
 
@@ -52,16 +48,10 @@ class scheduleController extends Controller
             return response()->json(['message' => 'Schedule not found'], 404);
         }
 
-        // Validasi input
-        $validated = $request->validate([
-            'available_date' => 'required|date',
-            'available_time_start' => 'required|date_format:H:i',
-            'available_time_end' => 'required|date_format:H:i',
-            'status' => 'required|in:Available,Booked,Unavailable',
-        ]);
 
         // Update data schedule
-        $schedule->update($validated);
+        $schedule->update($request->all());
+        $schedule->worker->name;
 
         return response()->json([
             'message' => 'Schedule updated successfully',

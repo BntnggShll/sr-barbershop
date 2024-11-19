@@ -13,9 +13,9 @@ return new class extends Migration
     {
          Schema::create('product_sales', function (Blueprint $table) {
         $table->id('sale_id'); // Primary key
-        $table->foreignId('product_id')->references('product_id')->on('products')->onDelete('cascade'); // Menghubungkan dengan tabel produk
-        $table->foreignId('user_id')->references('user_id')->on('users')->onDelete('cascade');
-        $table->foreignId('admin_id')->references('user_id')->on('users')->onDelete('cascade');
+        $table->foreignId('product_id')->references('product_id')->on('products')->onDelete('cascade')->nullable(); // Menghubungkan dengan tabel produk
+        $table->foreignId('user_id')->references('user_id')->on('users')->onDelete('cascade')->nullable();
+        $table->foreignId('admin_id')->references('user_id')->on('users')->onDelete('cascade')->nullable();
         $table->integer('quantity'); // Jumlah produk yang dijual
         $table->decimal('total_price', 15, 2); // Total harga yang dibayarkan
         $table->decimal('discount', 15, 2)->default(0); // Diskon yang diterapkan, jika ada

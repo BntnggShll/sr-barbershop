@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('work_documentation', function (Blueprint $table) {
         $table->id('documentation_id');
-        $table->foreignId('worker_id')->references('user_id')->on('users')->onDelete('cascade');
-        $table->foreignId('reservation_id')->references('reservation_id')->on('reservations')->onDelete('cascade');
-        $table->string('photo_url');
+        $table->foreignId('worker_id')->references('user_id')->on('users')->onDelete('cascade')->nullable();
+        $table->foreignId('reservation_id')->references('reservation_id')->on('reservations')->onDelete('cascade')->nullable();
+        $table->string('photo_url')->nullable();
         $table->text('description')->nullable();
         $table->timestamps();
     });
