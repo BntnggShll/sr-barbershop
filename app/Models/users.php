@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Queue\Worker;
 use Laravel\Sanctum\HasApiTokens;
 
 class Users extends Authenticatable
 {
-    use HasFactory, Notifiable,HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens;
 
     // Mengatur nama tabel jika berbeda dengan konvensi
     protected $table = 'users';
@@ -40,6 +41,9 @@ class Users extends Authenticatable
     protected $casts = [
         'points' => 'integer',
     ];
+    public function worker()
+    {
+        return $this->belongsTo(Schedules::class,'user_id','worker_id');
+    }
 
-    
 }

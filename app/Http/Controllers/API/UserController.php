@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Users;
+use Illuminate\Queue\Worker;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
@@ -37,7 +38,7 @@ class UserController extends Controller
     // Fungsi untuk pekerja
     public function pekerja()
     {
-        $data = Users::where('role', 'Pekerja')->get();
+        $data = Users::with('Worker')->where('role','pekerja')->get();
 
         return response()->json([
             'message' => 'pekerja users retrieved successfully',
