@@ -13,6 +13,7 @@ class Reservations extends Model
     protected $table = 'reservations';
 
     protected $primaryKey='reservation_id';
+    
 
     // Menentukan kolom yang dapat diisi
     protected $fillable = [

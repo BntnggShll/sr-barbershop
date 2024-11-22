@@ -18,19 +18,20 @@ class ReservationsController extends Controller
             'schedule_id' => 'required|exists:schedules,schedule_id',
             'reservation_status' => 'required|in:Pending,Confirmed,Completed,Canceled',
         ]);
-
         // Buat data reservasi baru
         $reservation = Reservations::create($validated);
+        $reservations = Reservations::with(['service','user'])->get();
+        
 
         return response()->json([
             'message' => 'Reservation created successfully',
-            'reservation' => $reservation
+            'reservation' => $reservations
         ], 201);
     }
     // Menampilkan semua data reservasi
     public function index()
     {
-        $reservations = Reservations::with('service')->get();
+        $reservations = Reservations::with(['service','user','worker'])->get();
 
         // Mengembalikan data dalam format JSON
         return response()->json(['data' => $reservations]);

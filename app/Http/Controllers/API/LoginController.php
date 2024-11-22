@@ -44,7 +44,7 @@ class LoginController extends Controller
                 // Generate JWT
                 $jwtSecretKey = env('JWT_SECRET'); // Pastikan untuk menyimpan secret key di .env
                 $token = JWT::encode($payload, $jwtSecretKey, 'HS256');
-
+                $user->jadwal;
                 // Kirim respons dengan token JWT
                 return response()->json([
                     'message' => 'Login successful',

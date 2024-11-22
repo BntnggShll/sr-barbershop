@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Reservations;
 use App\Models\Users;
 use App\Models\Work_documentation;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class WorkDocumentationController extends Controller
                 'reservation_id' => $documentations->reservation_id,
                 'description' => $documentations->description,
                 'photo_url' => asset('storage/' . $documentations->photo_url),
-                'worker'=>$documentations->worker,
+                'worker' => $documentations->worker,
             ];
         });
         return response()->json([
@@ -33,30 +34,45 @@ class WorkDocumentationController extends Controller
 
     public function store(Request $request)
     {
-
-        $path = $request->file('photo_url')?$request->file('photo_url')->store('documentation', 'public'):null;
-
-        $documentation = Work_documentation::create([
-            'worker_id' => $request->worker_id,
-            'reservation_id' => $request->reservation_id,
-            'photo_url' => $path,
-            'description' => $request->description,
+        // Validasi input
+        $validated = $request->validate([
+            'worker_id' => 'required|exists:users,user_id',
+            'reservation_id' => 'required|exists:reservations,reservation_id',
+            'photo_url' => 'nullable|image|max:2048',
+            'description' => 'nullable|string|max:255',
         ]);
 
+        // Upload file jika ada
+        $path = $request->file('photo_url')
+            ? $request->file('photo_url')->store('documentation', 'public')
+            : null;
+
+        // Buat data dokumentasi kerja
+        $documentation = Work_documentation::create([
+            'worker_id' => $validated['worker_id'],
+            'reservation_id' => $validated['reservation_id'],
+            'photo_url' => $path,
+            'description' => $validated['description'],
+        ]);
+
+        // Perbarui status reservasi menjadi Completed
+        $reservation = Reservations::findOrFail($validated['reservation_id']);
+        $reservation->update(['reservation_status' => 'Completed']);
         $data = [
             'documentation_id' => $documentation->documentation_id,
             'worker_id' => $documentation->worker_id,
             'reservation_id' => $documentation->reservation_id,
             'description' => $documentation->description,
-            'photo_url' => asset('storage/' . $documentation->photo_url),
+            'photo_url' => $path ? asset('storage/' . $path) : null,
+            'worker'=> $documentation->worker,
         ];
 
+        // Kembalikan respons
         return response()->json([
             'success' => true,
             'data' => $data,
         ], 201);
     }
-
     public function show($id)
     {
         $documentation = Work_documentation::findOrFail($id);
@@ -99,13 +115,13 @@ class WorkDocumentationController extends Controller
         $documentation->description = $request->description ?? $documentation->description;
 
         $documentation->save();
-
         $data = [
             'documentation_id' => $documentation->documentation_id,
             'worker_id' => $documentation->worker_id,
             'reservation_id' => $documentation->reservation_id,
             'description' => $documentation->description,
             'photo_url' => asset('storage/' . $documentation->photo_url),
+            'worker'=> $documentation->worker,
         ];
 
         return response()->json([

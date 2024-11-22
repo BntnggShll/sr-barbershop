@@ -41,7 +41,7 @@ class Users extends Authenticatable
     protected $casts = [
         'points' => 'integer',
     ];
-    public function worker()
+    public function jadwal()
     {
         return $this->belongsTo(Schedules::class,'user_id','worker_id');
     }

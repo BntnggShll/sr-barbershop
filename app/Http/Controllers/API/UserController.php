@@ -38,7 +38,7 @@ class UserController extends Controller
     // Fungsi untuk pekerja
     public function pekerja()
     {
-        $data = Users::with('Worker')->where('role','pekerja')->get();
+        $data = Users::with('jadwal')->where('role','pekerja')->get();
 
         return response()->json([
             'message' => 'pekerja users retrieved successfully',
