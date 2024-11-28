@@ -16,7 +16,7 @@ class Users extends Authenticatable
     protected $table = 'users';
 
     // Mengatur primary key
-    protected $primaryKey = 'user_id';
+    protected $primaryKey ='user_id';
 
     // Mengatur atribut yang dapat diisi
     protected $fillable = [
@@ -43,7 +43,19 @@ class Users extends Authenticatable
     ];
     public function jadwal()
     {
-        return $this->belongsTo(Schedules::class,'user_id','worker_id');
+        return $this->belongsTo(Schedules::class,'worker_id','user_id');
     }
+    public function reservation()
+    {
+        return $this->hasManyThrough(
+            Services::class, // Model akhir yang ingin diakses
+            Reservations::class, // Model perantara
+            'user_id', // Foreign key di TableC (relasi ke TableA)
+            'service_id', // Foreign key di TableD (relasi ke TableC)
+            'user_id',            // Local key di TableA
+            'reservation_id',             // Local key di TableC
+        );
+    }
+    
 
 }

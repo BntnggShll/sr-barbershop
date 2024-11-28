@@ -26,4 +26,15 @@ class Schedules extends Model
     {
         return $this->belongsTo(Users::class, 'worker_id', 'user_id');
     }
+    public function reservation()
+    {
+        return $this->hasManyThrough(
+            Services::class, // Model akhir yang ingin diakses
+            Reservations::class, // Model perantara
+            'schedule_id', // Foreign key di TableC (relasi ke TableA)
+            'service_id', // Foreign key di TableD (relasi ke TableC)
+            'schedule_id',            // Local key di TableA
+            'reservation_id'             // Local key di TableC
+        );
+    }
 }

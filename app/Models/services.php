@@ -22,5 +22,9 @@ class Services extends Model
         'image',
     ];
 
+    public function reservation()
+    {
+        return $this->hasMany(Reservations::class, 'service_id');
+    }
 
 }

@@ -101,6 +101,8 @@ Route::get('/user', [UserController::class, 'user']);
 Route::get('/pekerja', [UserController::class, 'pekerja']);
 Route::delete('/user/{id}', [UserController::class, 'destroy']);
 
+Route::post('/create-dana-payment', [PaymentController::class, 'createDanaPayment']);
+
 
 
 

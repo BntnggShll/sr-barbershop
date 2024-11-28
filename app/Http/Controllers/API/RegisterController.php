@@ -43,11 +43,12 @@ class RegisterController extends Controller
             // Payload untuk JWT dengan semua data pengguna
             $payload = [
                 'iss' => "http://localhost:3000/register", // Ganti dengan issuer Anda
-                'sub' => $user->id,
+                'sub' => $user->user_id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'phone_number' => $user->phone_number,
                 'role' => $user->role,
+                'user_id'=>$user->user_id,
                 'subscription_status' => $user->subscription_status,
                 'points' => $user->points,
                 'iat' => Carbon::now()->timestamp,

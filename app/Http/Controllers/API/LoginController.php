@@ -25,10 +25,9 @@ class LoginController extends Controller
             $user = Users::where('email', $validated['email'])->first();
 
             if ($user && Hash::check($request->password, $user->password)) {
-                // Payload untuk JWT
                 $payload = [
                     'iss' => "http://localhost:3000/login", // Ganti dengan issuer Anda
-                    'sub' => $user->id,
+                    'sub' => $user->user_id,
                     'name' => $user->name,
                     'email' => $user->email,
                     'phone_number' => $user->phone_number,
@@ -36,6 +35,7 @@ class LoginController extends Controller
                     'subscription_status' => $user->subscription_status,
                     'points' => $user->points,
                     'google_id' => $user->google_id,
+                    'user_id'=>$user->user_id,
                     'image' => $user->image,
                     'iat' => Carbon::now()->timestamp,
                     'exp' => Carbon::now()->addHours(2)->timestamp, // Token berlaku selama 2 jam
@@ -44,7 +44,7 @@ class LoginController extends Controller
                 // Generate JWT
                 $jwtSecretKey = env('JWT_SECRET'); // Pastikan untuk menyimpan secret key di .env
                 $token = JWT::encode($payload, $jwtSecretKey, 'HS256');
-                $user->jadwal;
+                // $user->reservasi;
                 // Kirim respons dengan token JWT
                 return response()->json([
                     'message' => 'Login successful',
