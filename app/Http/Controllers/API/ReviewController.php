@@ -11,8 +11,7 @@ class ReviewController extends Controller
     public function store(Request $request)
     {
 
-        // Buat review baru
-        $review = Review::create($request);
+        $review = Review::create($request->all());
 
         return response()->json([
             'message' => 'Review created successfully',
@@ -22,7 +21,7 @@ class ReviewController extends Controller
     // Menampilkan semua data review
     public function index()
     {
-        $reviews = Review::with(['user','worker'])->get();
+        $reviews = Review::with(['user','worker','reservation'])->get();
         
         return response()->json($reviews);
     }

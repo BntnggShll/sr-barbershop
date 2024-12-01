@@ -19,74 +19,140 @@ class ReservationsController extends Controller
             'worker_id' => 'required|exists:users,user_id',
             'schedule_id' => 'required|exists:schedules,schedule_id',
         ]);
-    
+
         $reservation = Reservations::create($validated);
-    
+
         // Ambil data schedule berdasarkan schedule_id yang divalidasi
         $schedule = Schedules::find($validated['schedule_id']);
-    
+
         if (!$schedule) {
             return response()->json(['message' => 'Schedule not found'], 404);
         }
-    
+
         // Gabungkan tanggal dan waktu menjadi objek Carbon
         $availableDateTime = Carbon::createFromFormat(
             'Y-m-d H:i:s',
             $schedule->available_date . ' ' . $schedule->available_time_start
         );
-    
+
         // Ambil waktu saat ini
         $currentTime = now();
-    
+
         // Hitung selisih waktu dalam menit
         $differenceInMinutes = $availableDateTime->diffInMinutes($currentTime, false);
-    
+
         // Hitung estimasi dalam jam
         $differenceInHours = (int) abs($differenceInMinutes / 60);
-    
+
         // Tentukan estimasi
         $estimasi = $differenceInMinutes > 0
             ? "{$differenceInMinutes} menit ({$differenceInHours} jam) dari sekarang"
             : abs($differenceInMinutes) . " menit (" . abs($differenceInHours) . " jam) yang lalu";
-    
+
         // Ambil data reservations berdasarkan user_id
         $reservations = Reservations::with(['service', 'user', 'worker', 'schedule'])
             ->where('user_id', $validated['user_id'])
             ->get();
-    
+
         // Tambahkan estimasi ke setiap reservation
         $reservations = $reservations->map(function ($reservation) use ($estimasi) {
             $reservation->estimasi = $estimasi;
             return $reservation;
         });
-    
+
         return response()->json([
             'message' => 'Reservation created successfully',
             'reservations' => $reservations,
         ], 201);
     }
-    
+
     // Menampilkan semua data reservasi
     public function index()
     {
-        $reservations = Reservations::with(['service','user','worker','schedule'])->get();
+        // Ambil semua jadwal terkait
+        $schedules = Schedules::all();
 
+        // Ambil semua reservasi berdasarkan user_id dengan relasi
+        $reservations = Reservations::with(['service', 'user', 'worker', 'schedule'])
+            ->get();
+
+        // Tambahkan estimasi ke setiap reservasi
+        $reservations = $reservations->map(function ($reservation) use ($schedules) {
+            // Cari jadwal yang cocok dengan schedule_id pada reservasi
+            $schedule = $schedules->firstWhere('schedule_id', $reservation->schedule_id);
+
+            if ($schedule) {
+                // Gabungkan tanggal dan waktu menjadi objek Carbon
+                $availableDateTime = Carbon::createFromFormat(
+                    'Y-m-d H:i:s',
+                    $schedule->available_date . ' ' . $schedule->available_time_start
+                );
+
+                // Hitung selisih waktu dalam menit
+                $currentTime = now();
+                $differenceInMinutes = $availableDateTime->diffInMinutes($currentTime, false);
+                $differenceInHours = (int) abs($differenceInMinutes / 60);
+
+                // Tentukan estimasi
+                $reservation->estimasi = $differenceInMinutes > 0
+                    ? "{$differenceInMinutes} menit ({$differenceInHours} jam) dari sekarang"
+                    : abs($differenceInMinutes) . " menit (" . abs($differenceInHours) . " jam) yang lalu";
+            } else {
+                $reservation->estimasi = "Jadwal tidak ditemukan";
+            }
+
+            return $reservation;
+        });
         // Mengembalikan data dalam format JSON
         return response()->json(['data' => $reservations]);
     }
 
 
     // Menampilkan data reservasi berdasarkan ID
-    public function show($id)
+    public function show($user_id)
     {
-        $reservation = Reservations::find($id);
+        // Ambil semua jadwal terkait
+        $schedules = Schedules::all();
 
-        if (!$reservation) {
-            return response()->json(['message' => 'Reservation not found'], 404);
-        }
+        // Ambil semua reservasi berdasarkan user_id dengan relasi
+        $reservations = Reservations::with(['service', 'user', 'worker', 'schedule'])
+            ->where('user_id', $user_id)
+            ->get();
 
-        return response()->json($reservation);
+        // Tambahkan estimasi ke setiap reservasi
+        $reservations = $reservations->map(function ($reservation) use ($schedules) {
+            // Cari jadwal yang cocok dengan schedule_id pada reservasi
+            $schedule = $schedules->firstWhere('schedule_id', $reservation->schedule_id);
+
+            if ($schedule) {
+                // Gabungkan tanggal dan waktu menjadi objek Carbon
+                $availableDateTime = Carbon::createFromFormat(
+                    'Y-m-d H:i:s',
+                    $schedule->available_date . ' ' . $schedule->available_time_start
+                );
+
+                // Hitung selisih waktu dalam menit
+                $currentTime = now();
+                $differenceInMinutes = $availableDateTime->diffInMinutes($currentTime, false);
+                $differenceInHours = (int) abs($differenceInMinutes / 60);
+
+                // Tentukan estimasi
+                $reservation->estimasi = $differenceInMinutes > 0
+                    ? "{$differenceInMinutes} menit ({$differenceInHours} jam) dari sekarang"
+                    : abs($differenceInMinutes) . " menit (" . abs($differenceInHours) . " jam) yang lalu";
+            } else {
+                $reservation->estimasi = "Jadwal tidak ditemukan";
+            }
+
+            return $reservation;
+        });
+
+        // Kembalikan respons JSON
+        return response()->json([
+            'reservations' => $reservations,
+        ], 200);
     }
+
     public function update(Request $request, $id)
     {
         $reservation = Reservations::find($id);

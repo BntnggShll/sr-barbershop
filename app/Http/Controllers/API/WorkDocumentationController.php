@@ -57,7 +57,7 @@ class WorkDocumentationController extends Controller
 
         // Perbarui status reservasi menjadi Completed
         $reservation = Reservations::findOrFail($validated['reservation_id']);
-        $reservation->update(['reservation_status' => 'Completed']);
+        $reservation->update(['reservation_status' => 'Completed']);    
         $data = [
             'documentation_id' => $documentation->documentation_id,
             'worker_id' => $documentation->worker_id,
