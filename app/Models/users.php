@@ -17,6 +17,10 @@ class Users extends Authenticatable
 
     // Mengatur primary key
     protected $primaryKey ='user_id';
+    public function getImageAttribute($value)
+    {
+        return $value ? asset('storage/' . $value) : null;
+    }
 
     // Mengatur atribut yang dapat diisi
     protected $fillable = [

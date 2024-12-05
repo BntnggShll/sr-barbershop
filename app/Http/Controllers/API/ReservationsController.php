@@ -72,6 +72,8 @@ class ReservationsController extends Controller
         // Ambil semua jadwal terkait
         $schedules = Schedules::all();
 
+        
+
         // Ambil semua reservasi berdasarkan user_id dengan relasi
         $reservations = Reservations::with(['service', 'user', 'worker', 'schedule'])
             ->get();
@@ -102,6 +104,11 @@ class ReservationsController extends Controller
             }
 
             return $reservation;
+        });
+
+        $reservations = $reservations->map(function ($reservations) {
+            $reservations->formatted_date = Carbon::parse($reservations->updated_at)->format('M d Y H:i');
+            return $reservations;
         });
         // Mengembalikan data dalam format JSON
         return response()->json(['data' => $reservations]);

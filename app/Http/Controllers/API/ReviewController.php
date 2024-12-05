@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Review;
 
@@ -22,6 +23,11 @@ class ReviewController extends Controller
     public function index()
     {
         $reviews = Review::with(['user','worker','reservation'])->get();
+        $reviews = $reviews->map(function ($review) {
+            $review->formatted_date = Carbon::parse($review->created_at)->format('M d Y');
+            return $review;
+        });
+
         
         return response()->json($reviews);
     }

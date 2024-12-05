@@ -22,6 +22,10 @@ class Services extends Model
         'image',
     ];
 
+    public function getImageAttribute($value)
+    {
+        return $value ? asset('storage/' . $value) : null;
+    }
     public function reservation()
     {
         return $this->hasMany(Reservations::class, 'service_id');

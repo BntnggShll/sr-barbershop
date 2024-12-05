@@ -47,4 +47,8 @@ class Reservations extends Model
     {
         return $this->belongsTo(Schedules::class, 'schedule_id', 'schedule_id');
     }
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'reservation_id');
+    }
 }
