@@ -12,7 +12,6 @@ class FinancialController extends Controller
     {
         // Validasi input
         $validated = $request->validate([
-            'admin_id' => 'required|exists:users,user_id',
             'total_income' => 'required|numeric',
             'total_expense' => 'required|numeric',
             'net_profit' => 'required|numeric',
@@ -31,7 +30,7 @@ class FinancialController extends Controller
     // Menampilkan semua laporan keuangan
     public function index()
     {
-        $reports = Financial_reports::all();
+        $reports = Financial_reports::with('worker')->get();
         return response()->json($reports);
     }
 

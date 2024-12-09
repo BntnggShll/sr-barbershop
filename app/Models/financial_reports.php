@@ -14,7 +14,7 @@ class Financial_reports extends Model
 
     // Menentukan kolom yang dapat diisi
     protected $fillable = [
-        'admin_id',
+        'worker_id',
         'total_income',
         'total_expense',
         'net_profit',
@@ -23,8 +23,8 @@ class Financial_reports extends Model
     ];
 
     // Relasi dengan model lain (opsional)
-    public function admin()
+    public function worker()
     {
-        return $this->belongsTo(Users::class, 'admin_id');
+        return $this->belongsTo(Users::class, 'worker_id','user_id');
     }
 }
