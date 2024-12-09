@@ -12,10 +12,9 @@ return new class extends Migration {
     {
         Schema::create('financial_reports', function (Blueprint $table) {
             $table->id('report_id');
-            $table->foreignId('worker_id')->references('user_id')->on('users')->onDelete('cascade')->nullable();
-            $table->foreignId('id_income')->references('id_income')->on('income')->onDelete('cascade')->nullable(); // Total pemasukan
+            $table->decimal('total_income', 15, 2); // Total pemasukan
             $table->foreignId('id_expense')->references('id_expense')->on('expense')->onDelete('cascade')->nullable(); // Total pengeluaran
-            $table->decimal('net_profit')->nullable(); // Laba bersih (pemasukan - pengeluaran)
+            $table->decimal('net_profit', 15, 2)->nullable(); // Laba bersih (pemasukan - pengeluaran)
             $table->date('report_date'); // Tanggal laporan
             $table->text('description')->nullable(); // Deskripsi tambahan
             $table->timestamps();
