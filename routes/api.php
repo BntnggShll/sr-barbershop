@@ -1,5 +1,7 @@
 <?php
 use App\Http\Controllers\API\ServiceController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\IncomeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\LoginController;
@@ -7,7 +9,6 @@ use App\Http\Controllers\API\RegisterController;
 use App\Http\Controllers\API\LoginGoogleController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Controllers\API\SubscriptionController;
-use App\Http\Controllers\API\FinancialController;
 use App\Http\Controllers\API\LoyaltyController;
 use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\ProductController;
@@ -35,12 +36,6 @@ Route::get('/subscriptions/{id}', [SubscriptionController::class, 'show']);
 Route::post('/subscriptions', [SubscriptionController::class, 'store']);
 Route::put('/subscriptions/{id}', [SubscriptionController::class, 'update']);
 Route::delete('/subscriptions/{id}', [SubscriptionController::class, 'destroy']);
-// financial-reports
-Route::get('/financial-reports', [FinancialController::class, 'index']);
-Route::get('/financial-reports/{id}', [FinancialController::class, 'show']);
-Route::post('/financial-reports', [FinancialController::class, 'store']);
-Route::put('/financial-reports/{id}', [FinancialController::class, 'update']);
-Route::delete('/financial-reports/{id}', [FinancialController::class, 'destroy']);
 // loyalty
 Route::get('/loyalty', [LoyaltyController::class, 'index']);
 Route::get('/loyalty/{id}', [LoyaltyController::class, 'show']);
@@ -95,6 +90,18 @@ Route::get('/work_documentation/{id}', [WorkDocumentationController::class, 'sho
 Route::post('/work_documentation', [WorkDocumentationController::class, 'store']);
 Route::post('/work_documentation/{id}', [WorkDocumentationController::class, 'update']);
 Route::delete('/work_documentation/{id}', [WorkDocumentationController::class, 'destroy']);
+// income
+Route::get('/income', [IncomeController::class, 'index']);
+Route::get('/income/{id}', [IncomeController::class, 'show']);
+Route::post('/income', [IncomeController::class, 'store']);
+Route::post('/income/{id}', [IncomeController::class, 'update']);
+Route::delete('/income/{id}', [IncomeController::class, 'destroy']);
+// expense
+Route::get('/expense', [ExpenseController::class, 'index']);
+Route::get('/expense/{id}', [ExpenseController::class, 'show']);
+Route::post('/expense', [ExpenseController::class, 'store']);
+Route::post('/expense/{id}', [ExpenseController::class, 'update']);
+Route::delete('/expense/{id}', [ExpenseController::class, 'destroy']);
 // User
 Route::get('/admin', [UserController::class, 'admin']);
 Route::get('/user', [UserController::class, 'user']);
