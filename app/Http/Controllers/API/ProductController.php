@@ -46,19 +46,9 @@ class ProductController extends Controller
     public function index()
     {
         $product = Products::all();
-        $data = $product->map(function ($product) {
-            return [
-                'product_id' => $product->product_id,
-                'name' => $product->name,
-                'description' => $product->description,
-                'price' => $product->price,
-                'stock' => $product->stock,
-                'image' => asset('storage/' . $product->image),
-            ];
-        });
         return response()->json([
             'success' => true,
-            'product' => $data,
+            'product' => $product,
         ]);
     }
 

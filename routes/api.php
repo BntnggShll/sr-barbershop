@@ -1,7 +1,7 @@
 <?php
 use App\Http\Controllers\API\ServiceController;
-use App\Http\Controllers\ExpenseController;
-use App\Http\Controllers\IncomeController;
+use App\Http\Controllers\API\ExpenseController;
+use App\Http\Controllers\API\IncomeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\LoginController;

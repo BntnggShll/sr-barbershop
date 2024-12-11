@@ -20,4 +20,9 @@ class Products extends Model
         'stock',
         'image',
     ];
+
+    public function getImageAttribute($value)
+    {
+        return $value ? asset('storage/' . $value) : null;
+    }
 }

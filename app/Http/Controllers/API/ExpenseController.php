@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Models\Expense;
 use Illuminate\Http\Request;
 
@@ -21,14 +22,8 @@ class ExpenseController extends Controller
     // Menambahkan data baru
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'admin_id' => 'required|exists:users,user_id',
-            'expense' => 'required|numeric',
-            'description' => 'required|string',
-            'report_date' => 'required|date',
-        ]);
 
-        $expense = Expense::create($validated);
+        $expense = Expense::create($request->all());
 
         return response()->json([
             'success' => true,
