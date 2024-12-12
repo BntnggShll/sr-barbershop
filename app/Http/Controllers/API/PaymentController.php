@@ -31,7 +31,7 @@ class PaymentController extends Controller
     // Menampilkan semua data payments
     public function index()
     {
-        $payments = Payments::all();
+        $payments = Payments::with(['payable','user']);
         return response()->json($payments);
     }
 

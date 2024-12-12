@@ -1,8 +1,6 @@
 <?php
 use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\ExpenseController;
-use App\Http\Controllers\API\IncomeController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\LoginController;
 use App\Http\Controllers\API\RegisterController;
@@ -12,7 +10,6 @@ use App\Http\Controllers\API\SubscriptionController;
 use App\Http\Controllers\API\LoyaltyController;
 use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\ProductController;
-use App\Http\Controllers\API\ProductSaleController;
 use App\Http\Controllers\API\ReservationsController;
 use App\Http\Controllers\API\ReviewController;
 use App\Http\Controllers\API\scheduleController;
@@ -54,12 +51,6 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::post('/products', [ProductController::class, 'store']);
 Route::post('/products/{id}', [ProductController::class, 'update']);
 Route::delete('/products/{id}', [ProductController::class, 'destroy']);
-// product-sales
-Route::get('/product-sales', [ProductSaleController::class, 'index']);
-Route::get('/product-sales/{id}', [ProductSaleController::class, 'show']);
-Route::post('/product-sales', [ProductSaleController::class, 'store']);
-Route::put('/product-sales/{id}', [ProductSaleController::class, 'update']);
-Route::delete('/product-sales/{id}', [ProductSaleController::class, 'destroy']);
 // reservations
 Route::get('/reservations', [ReservationsController::class, 'index']);
 Route::get('/reservations/{id}', [ReservationsController::class, 'show']);
@@ -90,12 +81,7 @@ Route::get('/work_documentation/{id}', [WorkDocumentationController::class, 'sho
 Route::post('/work_documentation', [WorkDocumentationController::class, 'store']);
 Route::post('/work_documentation/{id}', [WorkDocumentationController::class, 'update']);
 Route::delete('/work_documentation/{id}', [WorkDocumentationController::class, 'destroy']);
-// income
-Route::get('/income', [IncomeController::class, 'index']);
-Route::get('/income/{id}', [IncomeController::class, 'show']);
-Route::post('/income', [IncomeController::class, 'store']);
-Route::post('/income/{id}', [IncomeController::class, 'update']);
-Route::delete('/income/{id}', [IncomeController::class, 'destroy']);
+
 // expense
 Route::get('/expense', [ExpenseController::class, 'index']);
 Route::get('/expense/{id}', [ExpenseController::class, 'show']);

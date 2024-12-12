@@ -14,19 +14,19 @@ class Payments extends Model
 
     // Menentukan kolom yang dapat diisi
     protected $fillable = [
-        'reservation_id',
         'user_id',
+        'payable',
         'amount',
         'payment_method',
         'payment_status',
         'transaction_date',
     ];
 
-    // Relasi dengan model Reservation
-    public function reservation()
+    public function payable()
     {
-        return $this->belongsTo(Reservations::class, 'reservation_id', 'reservation_id');
+        return $this->morphTo();
     }
+
 
     // Relasi dengan model User
     public function user()

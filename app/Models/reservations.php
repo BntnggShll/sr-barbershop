@@ -24,6 +24,10 @@ class Reservations extends Model
         'reservation_status',
     ];
 
+    public function payments()
+    {
+        return $this->morphMany(Payments::class, 'payable');
+    }
     // Relasi dengan model User
     public function user()
     {

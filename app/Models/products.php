@@ -21,6 +21,11 @@ class Products extends Model
         'image',
     ];
 
+    public function payments()
+    {
+        return $this->morphMany(Payments::class, 'payable');
+    }
+
     public function getImageAttribute($value)
     {
         return $value ? asset('storage/' . $value) : null;
