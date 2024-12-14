@@ -18,6 +18,7 @@ return new class extends Migration
         $table->foreignId('worker_id')->references('user_id')->on('users')->onDelete('cascade')->nullable();
         $table->foreignId('schedule_id')->references('schedule_id')->on('schedules')->onDelete('cascade')->nullable();
         $table->enum('reservation_status', ['Pending', 'Confirmed', 'Completed', 'Canceled']);
+        $table->string('description')->nullable();
         $table->timestamps();
     });
     }

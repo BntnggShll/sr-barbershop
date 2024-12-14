@@ -13,15 +13,7 @@ class Payments extends Model
     protected $table = 'payments';
 
     // Menentukan kolom yang dapat diisi
-    protected $fillable = [
-        'user_id',
-        'payable',
-        'amount',
-        'payment_method',
-        'payment_status',
-        'transaction_date',
-    ];
-
+protected $guarded = [];    
     public function payable()
     {
         return $this->morphTo();
@@ -31,6 +23,6 @@ class Payments extends Model
     // Relasi dengan model User
     public function user()
     {
-        return $this->belongsTo(Users::class, 'user_id', 'user_id');
+        return $this->belongsTo(Users::class,  'user_id');
     }
 }

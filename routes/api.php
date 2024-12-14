@@ -45,6 +45,7 @@ Route::get('/payments/{id}', [PaymentController::class, 'show']);
 Route::post('/payments', [PaymentController::class, 'store']);
 Route::put('/payments/{id}', [PaymentController::class, 'update']);
 Route::delete('/payments/{id}', [PaymentController::class, 'destroy']);
+Route::post('/stripe', [PaymentController::class,'stripePost']);
 // products
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);

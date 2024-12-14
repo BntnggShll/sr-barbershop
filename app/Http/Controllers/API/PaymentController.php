@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Payments;
+use Stripe\Stripe;
+use Stripe\Charge;
 
 class PaymentController extends Controller
 {
@@ -31,7 +33,7 @@ class PaymentController extends Controller
     // Menampilkan semua data payments
     public function index()
     {
-        $payments = Payments::with(['payable','user']);
+        $payments = Payments::with(['payable','user'])->get();
         return response()->json($payments);
     }
 
@@ -108,6 +110,28 @@ class PaymentController extends Controller
             return response()->json($payment);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function stripePost(Request $request)
+    {
+        // Set Stripe API key
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            // Membuat charge dengan token yang diterima
+            $charge = Charge::create([
+                'amount' => 10000, // $100
+                'currency' => 'usd',
+                'source' => $request->stripeToken,
+                'description' => 'Payment for Order',
+            ]);
+
+            // Jika pembayaran berhasil
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            // Tangani jika ada error
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
 

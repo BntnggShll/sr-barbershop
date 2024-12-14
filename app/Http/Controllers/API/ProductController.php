@@ -90,15 +90,8 @@ class ProductController extends Controller
             $validated['image'] = $imagePath;
         }
         $product->update(array_merge($validated, ['image' => $imagePath ?? $product->image]));
-        $data = [
-            'product_id' => $product->product_id,
-            'name' => $product->name,
-            'description' => $product->description,
-            'price' => $product->price,
-            'stock' => $product->stock,
-            'image' => asset('storage/' . $product->image),
-        ];
-
+        
+        $data = Products::all();
         return response()->json([
             'success' => true,
             'product' => $data,
