@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Payments;
 use Stripe\Stripe;
 use Stripe\Charge;
+use Carbon\Carbon;
 
 class PaymentController extends Controller
 {
@@ -33,7 +34,7 @@ class PaymentController extends Controller
     // Menampilkan semua data payments
     public function index()
     {
-        $payments = Payments::with(['payable','user'])->get();
+        $payments = Payments::with(['payable', 'user'])->get();
         return response()->json($payments);
     }
 
@@ -117,11 +118,22 @@ class PaymentController extends Controller
     {
         // Set Stripe API key
         Stripe::setApiKey(env('STRIPE_SECRET'));
+        $validated = $request->validate([
+            'payable_type' => 'required',
+            'payable_id' => 'required',
+            'user_id' => 'required|exists:users,user_id',
+            'amount' => 'required|numeric|min:0',
+            'payment_method' => 'required|in:Credit Card,E-Wallet',
+        ]);
+
+        $validated['payment_status'] = 'Completed';
+        $validated['transaction_date'] = Carbon::now();
+        $payment = Payments::create($validated);
 
         try {
             // Membuat charge dengan token yang diterima
             $charge = Charge::create([
-                'amount' => 10000, // $100
+                'amount' => $request->amount, // $100
                 'currency' => 'usd',
                 'source' => $request->stripeToken,
                 'description' => 'Payment for Order',
