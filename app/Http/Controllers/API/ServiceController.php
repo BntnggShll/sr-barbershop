@@ -48,20 +48,9 @@ class ServiceController extends Controller
     {
         $services = Services::all();
 
-        $data = $services->map(function ($service) {
-            return [
-                'service_id'=> $service->service_id,
-                'service_name' => $service->service_name,
-                'description' => $service->description,
-                'price' => $service->price,
-                'duration' => $service->duration,
-                'image' => $service->image ? asset('storage/' . $service->image) : null,
-            ];
-        });
-
         return response()->json([
             'success' => true,
-            'data' => $data,
+            'data' => $services,
         ]);
     }
 

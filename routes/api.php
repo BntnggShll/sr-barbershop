@@ -91,10 +91,11 @@ Route::post('/expense/{id}', [ExpenseController::class, 'update']);
 Route::delete('/expense/{id}', [ExpenseController::class, 'destroy']);
 // User
 Route::get('/admin', [UserController::class, 'admin']);
-Route::get('/user', [UserController::class, 'user']);
 Route::get('/pekerja', [UserController::class, 'pekerja']);
+Route::get('/user', [UserController::class, 'user']);
 Route::delete('/user/{id}', [UserController::class, 'destroy']);
 Route::post('/user/{id}', [UserController::class, 'update']);
+Route::put('/subscribe/{id}', [UserController::class, 'subscribe']);
 
 Route::post('/create-dana-payment', [PaymentController::class, 'createDanaPayment']);
 
