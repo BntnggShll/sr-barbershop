@@ -19,9 +19,10 @@ use App\Http\Controllers\API\RegisterPekerjaController;
 
 
 
-    Route::post('/login', [LoginController::class, 'store']);
-    Route::post('/register', [RegisterController::class, 'register']);
-Route::post('/registerpekerja',[RegisterPekerjaController::class,'registerpekerja']);
+Route::post('/login', [LoginController::class, 'store']);
+Route::post('/register', [RegisterController::class, 'register']);
+Route::post('/registerpekerja', [RegisterController::class, 'registerpekerja']);
+Route::post('/registeradmin', [RegisterController::class, 'registeradmin']);
 
 Route::get('auth/google', [LoginGoogleController::class, 'redirectToGoogle'])
     ->middleware(EnsureTokenIsValid::class);
@@ -32,6 +33,7 @@ Route::get('/subscriptions', [SubscriptionController::class, 'index']);
 Route::get('/subscriptions/{id}', [SubscriptionController::class, 'show']);
 Route::post('/subscriptions', [SubscriptionController::class, 'store']);
 Route::put('/subscriptions/{id}', [SubscriptionController::class, 'update']);
+Route::put('/subscribe/{id}', [UserController::class, 'subscribe']);
 Route::delete('/subscriptions/{id}', [SubscriptionController::class, 'destroy']);
 // loyalty
 Route::get('/loyalty', [LoyaltyController::class, 'index']);
@@ -45,7 +47,7 @@ Route::get('/payments/{id}', [PaymentController::class, 'show']);
 Route::post('/payments', [PaymentController::class, 'store']);
 Route::put('/payments/{id}', [PaymentController::class, 'update']);
 Route::delete('/payments/{id}', [PaymentController::class, 'destroy']);
-Route::post('/stripe', [PaymentController::class,'stripePost']);
+Route::post('/stripe', [PaymentController::class, 'stripePost']);
 // products
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
@@ -95,7 +97,6 @@ Route::get('/pekerja', [UserController::class, 'pekerja']);
 Route::get('/user', [UserController::class, 'user']);
 Route::delete('/user/{id}', [UserController::class, 'destroy']);
 Route::post('/user/{id}', [UserController::class, 'update']);
-Route::put('/subscribe/{id}', [UserController::class, 'subscribe']);
 
 Route::post('/create-dana-payment', [PaymentController::class, 'createDanaPayment']);
 
