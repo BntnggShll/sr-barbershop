@@ -31,9 +31,8 @@ Route::get('auth/google/callback', [LoginGoogleController::class, 'handleGoogleC
 // subscriptions
 Route::get('/subscriptions', [SubscriptionController::class, 'index']);
 Route::get('/subscriptions/{id}', [SubscriptionController::class, 'show']);
-Route::post('/subscriptions', [SubscriptionController::class, 'store']);
+Route::post('/subscriptions/{id}', [SubscriptionController::class, 'store']);
 Route::put('/subscriptions/{id}', [SubscriptionController::class, 'update']);
-Route::put('/subscribe/{id}', [UserController::class, 'subscribe']);
 Route::delete('/subscriptions/{id}', [SubscriptionController::class, 'destroy']);
 // loyalty
 Route::get('/loyalty', [LoyaltyController::class, 'index']);

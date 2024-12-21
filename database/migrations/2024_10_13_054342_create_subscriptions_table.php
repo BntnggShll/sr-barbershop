@@ -16,7 +16,8 @@ return new class extends Migration
         $table->foreignId('user_id')->references('user_id')->on('users')->onDelete('cascade')->nullable();
         $table->date('start_date');
         $table->date('end_date');
-        $table->decimal('price', 8, 2);
+        $table->integer('price');
+        $table->string('description');
         $table->enum('status', ['Active', 'Expired']);
         $table->timestamps();
     });

@@ -19,6 +19,7 @@ class Subscriptions extends Model
         'end_date',
         'price',
         'status',
+        'description'
     ];
 
     // Relasi dengan model lain (opsional)

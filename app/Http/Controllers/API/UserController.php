@@ -112,59 +112,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function subscribe($id, Request $request)
-    {
-        $user = Users::find($id);
-
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User not found',
-            ], 404);
-        }
-
-        // Validasi data
-        $validatedData = $request->validate([
-            'subscription_status' => 'required|string|max:255',
-        ]);
-
-        // Update data user
-        $user->update($validatedData);
-
-        try {
-            // Membuat payload JWT
-            $payload = [
-                'iss' => "http://localhost:3000/login", // Ganti dengan issuer Anda
-                'sub' => $user->user_id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'phone_number' => $user->phone_number,
-                'role' => $user->role,
-                'subscription_status' => $user->subscription_status,
-                'points' => $user->points,
-                'google_id' => $user->google_id,
-                'user_id' => $user->user_id,
-                'image' => $user->image,
-                'iat' => Carbon::now()->timestamp,
-                'exp' => Carbon::now()->addHours(2)->timestamp,// Token berlaku selama 2 jam
-            ];
-
-            // Generate JWT
-            $jwtSecretKey = env('JWT_SECRET'); // Pastikan secret key disimpan di .env
-            $token = JWT::encode($payload, $jwtSecretKey, 'HS256');
-
-            // Kirim respons dengan token JWT
-            return response()->json([
-                'success' => true,
-                'message' => 'User subscription updated successfully',
-                'token' => $token,
-                'user' => $user,
-            ], 200);
-
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
+    
 
 
 
