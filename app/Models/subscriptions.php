@@ -11,6 +11,7 @@ class Subscriptions extends Model
 
     // Nama tabel jika berbeda dari konvensi
     protected $table = 'subscriptions';
+    protected $primaryKey = 'subscription_id';
 
     // Menentukan kolom yang dapat diisi
     protected $fillable = [
@@ -26,5 +27,9 @@ class Subscriptions extends Model
     public function user()
     {
         return $this->belongsTo(Users::class, 'user_id');
+    }
+    public function payments()
+    {
+        return $this->morphMany(Payments::class, 'payable');
     }
 }

@@ -88,31 +88,31 @@ class PaymentController extends Controller
 
         return response()->json(['message' => 'Payment record deleted successfully']);
     }
-    public function createDanaPayment(Request $request)
-    {
-        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+    // public function createDanaPayment(Request $request)
+    // {
+    //     \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+    //     \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
 
-        $params = [
-            'payment_type' => 'gopay', // DANA juga menggunakan struktur e-wallet seperti GoPay
-            'transaction_details' => [
-                'order_id' => 'order-' . uniqid(),
-                'gross_amount' => $request->amount,
-            ],
-            'customer_details' => [
-                'email' => $request->email,
-                'phone' => $request->phone,
-            ],
-        ];
+    //     $params = [
+    //         'payment_type' => 'gopay', // DANA juga menggunakan struktur e-wallet seperti GoPay
+    //         'transaction_details' => [
+    //             'order_id' => 'order-' . uniqid(),
+    //             'gross_amount' => $request->amount,
+    //         ],
+    //         'customer_details' => [
+    //             'email' => $request->email,
+    //             'phone' => $request->phone,
+    //         ],
+    //     ];
 
-        try {
-            $payment = \Midtrans\CoreApi::charge($params);
+    //     try {
+    //         $payment = \Midtrans\CoreApi::charge($params);
 
-            return response()->json($payment);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
+    //         return response()->json($payment);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => $e->getMessage()], 500);
+    //     }
+    // }
 
     public function stripePost(Request $request)
     {
