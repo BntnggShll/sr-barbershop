@@ -5,11 +5,13 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Firebase\JWT\JWT;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\Users;
 use Illuminate\Queue\Worker;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Stripe\ApiOperations\Update;
 
 class UserController extends Controller
 {
@@ -77,8 +79,10 @@ class UserController extends Controller
     }
     public function update(Request $request, $user_id)
     {
+        // Menemukan user berdasarkan user_id
         $user = Users::find($user_id);
 
+        // Jika user tidak ditemukan, kembalikan respons error
         if (!$user) {
             return response()->json([
                 'message' => 'User not found',
@@ -91,28 +95,108 @@ class UserController extends Controller
         // Menghandle file upload jika ada
         if ($request->hasFile('image')) {
             if ($user->image) {
-                Storage::delete('public/' . $user->image); // Hapus file lama
+                // Menghapus file lama jika ada
+                Storage::delete('public/' . $user->image);
             }
 
+            // Menyimpan file gambar yang baru
             $imagePath = $request->file('image')->store('user_profile', 'public');
         }
 
-        // Update data user
+        // Jika password ada dalam request, hash password tersebut
+        if ($request->has('password')) {
+            // Hash password baru sebelum menyimpannya
+            $request->merge(['password' => hash::make($request->password)]);
+        }
+
+        // Mengupdate data user
         $user->update(array_merge(
-            $request->all(),
+            $request->except(['image']), // Menghindari overwrite gambar dengan data lain
             ['image' => $imagePath]
         ));
 
-        // Menyusun URL lengkap untuk gambar
-        $user->image = $imagePath ? asset('storage/' . $imagePath) : null;
 
+        // Membuat payload untuk token JWT
+        $payload = [
+            'iss' => "http://localhost:3000/login", // Ganti dengan issuer Anda
+            'sub' => $user->user_id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'phone_number' => $user->phone_number,
+            'role' => $user->role,
+            'subscription_status' => $user->subscription_status,
+            'points' => $user->points,
+            'google_id' => $user->google_id,
+            'user_id' => $user->user_id,
+            'image' => $user->image,
+            'iat' => Carbon::now()->timestamp,
+            'exp' => Carbon::now()->addHours(2)->timestamp,
+        ];
+
+        // Mengambil secret key dari file .env
+        $jwtSecretKey = env('JWT_SECRET');
+
+        // Membuat token JWT baru dengan secret key
+        $token = JWT::encode($payload, $jwtSecretKey, 'HS256'); // HS256 adalah algoritma enkripsi
+
+        // Mengembalikan response dengan data user yang diperbarui dan token baru
         return response()->json([
             'success' => true,
+            'message' => 'Profile updated successfully',
             'user' => $user,
+            'token' => $token // Token JWT yang baru dikirimkan
         ]);
     }
 
-    
+    public function points($id)
+{
+    // Cari data user berdasarkan ID
+    $user = Users::find($id);
+
+    // Periksa apakah user ditemukan
+    if (!$user) {
+        return response()->json([
+            'success' => false,
+            'message' => 'User not found',
+        ], 404);
+    }
+
+    // Tambahkan 1 ke points
+    $user->increment('points', 1);
+    $user->refresh();
+
+    $payload = [
+        'iss' => "http://localhost:3000/login", // Ganti dengan issuer Anda
+        'sub' => $user->user_id,
+        'name' => $user->name,
+        'email' => $user->email,
+        'phone_number' => $user->phone_number,
+        'role' => $user->role,
+        'subscription_status' => $user->subscription_status,
+        'points' => $user->points,
+        'google_id' => $user->google_id,
+        'user_id' => $user->user_id,
+        'image' => $user->image,
+        'iat' => Carbon::now()->timestamp,
+        'exp' => Carbon::now()->addHours(2)->timestamp,
+    ];
+
+    // Mengambil secret key dari file .env
+    $jwtSecretKey = env('JWT_SECRET');
+
+    // Membuat token JWT baru dengan secret key
+    $token = JWT::encode($payload, $jwtSecretKey, 'HS256'); // HS256 adalah algoritma enkripsi
+
+    // Mengembalikan response dengan data user yang diperbarui dan token baru
+    return response()->json([
+        'success' => true,
+        'message' => 'Profile updated successfully',
+        'user' => $user,
+        'token' => $token // Token JWT yang baru dikirimkan
+    ]);
+}
+
+
 
 
 

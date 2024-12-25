@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('expense', function (Blueprint $table) {
             $table->id('id_expense');
             $table->foreignId('admin_id')->references('user_id')->on('users')->onDelete('cascade')->nullable();
-            $table->decimal('expense', 15, 0);
+            $table->integer('expense');
             $table->string('description');
             $table->date('report_date');
             $table->timestamps();

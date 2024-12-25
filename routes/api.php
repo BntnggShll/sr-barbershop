@@ -47,6 +47,8 @@ Route::post('/payments', [PaymentController::class, 'store']);
 Route::put('/payments/{id}', [PaymentController::class, 'update']);
 Route::delete('/payments/{id}', [PaymentController::class, 'destroy']);
 Route::post('/stripe', [PaymentController::class, 'stripePost']);
+Route::post('/googlepay', [PaymentController::class, 'googlepay']);
+
 // products
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
@@ -59,6 +61,7 @@ Route::get('/reservations/{id}', [ReservationsController::class, 'show']);
 Route::post('/reservations', [ReservationsController::class, 'store']);
 Route::post('/reservations/{id}', [ReservationsController::class, 'update']);
 Route::delete('/reservations/{id}', [ReservationsController::class, 'destroy']);
+Route::put('/rating/{id}', [ReservationsController::class, 'rating']);
 // reviews
 Route::get('/reviews', [ReviewController::class, 'index']);
 Route::get('/reviews/{id}', [ReviewController::class, 'show']);
@@ -71,6 +74,7 @@ Route::get('/schedules/{id}', [ScheduleController::class, 'show']);
 Route::post('/schedules', [ScheduleController::class, 'store']);
 Route::post('/schedules/{id}', [ScheduleController::class, 'update']);
 Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy']);
+Route::put('/booked/{id}', [ScheduleController::class, 'booked']);
 // services
 Route::get('/services', [ServiceController::class, 'index']);
 Route::get('/services/{id}', [ServiceController::class, 'show']);
@@ -96,6 +100,7 @@ Route::get('/pekerja', [UserController::class, 'pekerja']);
 Route::get('/user', [UserController::class, 'user']);
 Route::delete('/user/{id}', [UserController::class, 'destroy']);
 Route::post('/user/{id}', [UserController::class, 'update']);
+Route::put('/points/{id}', [UserController::class, 'points']);
 
 Route::post('/create-dana-payment', [PaymentController::class, 'createDanaPayment']);
 

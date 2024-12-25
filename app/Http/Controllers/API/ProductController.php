@@ -11,35 +11,35 @@ use Illuminate\Support\Facades\Gate;
 class ProductController extends Controller
 {
     public function store(Request $request)
-    {
-        // Ambil inputan dari request tanpa validasi otomatis
-        $name = $request->input('name');
-        $description = $request->input('description');
-        $price = $request->input('price');
-        $stock = $request->input('stock');
-        $imagePath = null;
+{
+    // Ambil inputan dari request dengan validasi
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'required|string',
+        'price' => 'required|integer|min:0', // Pastikan price adalah numeric
+        'stock' => 'required|integer|min:0',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi untuk gambar
+    ]);
 
-
-        // Menyimpan gambar jika ada
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('images', 'public');
-        }
-
-        // Buat data product baru tanpa validator
-        $product = Products::create([
-            'name' => $name,
-            'description' => $description,
-            'price' => $price,
-            'stock' => $stock,
-            'image' => $imagePath
-        ]);
-
-        return response()->json([
-            'message' => 'Product created successfully',
-            'product' => $product,
-            'success' => true
-        ], 201);
+    // Menyimpan gambar jika ada
+    $imagePath = null;
+    if ($request->hasFile('image')) {
+        $imagePath = $request->file('image')->store('images', 'public');
     }
+
+    // Tambahkan path gambar ke data yang telah divalidasi
+    $validated['image'] = $imagePath;
+
+    // Buat data produk baru
+    $product = Products::create($validated);
+
+    return response()->json([
+        'message' => 'Product created successfully',
+        'product' => $product,
+        'success' => true
+    ], 201);
+}
+
 
 
     // Menampilkan semua data products

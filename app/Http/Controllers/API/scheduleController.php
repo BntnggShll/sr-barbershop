@@ -118,5 +118,18 @@ class scheduleController extends Controller
         return response()->json(['message' => 'Schedule deleted successfully']);
     }
 
+    public function booked($id)
+    {
+        $booked = Schedules::find($id);
+        if (!$booked) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Reservation not found',
+            ], 404);
+        }
+
+        $booked->update(['status'=>'Booked']);
+    }
+
 
 }

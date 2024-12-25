@@ -19,6 +19,7 @@ class ReservationsController extends Controller
             'worker_id' => 'required|exists:users,user_id',
             'schedule_id' => 'required|exists:schedules,schedule_id',
         ]);
+        $validated['reservation_status'] = 'Confirmed';
 
         $reservation = Reservations::create($validated);
 
@@ -197,6 +198,22 @@ class ReservationsController extends Controller
         $reservation->delete();
 
         return response()->json(['message' => 'Reservation deleted successfully']);
+    }
+
+    public function rating ($id)
+    {
+        $reservation = Reservations::find($id);
+
+        if (!$reservation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Reservation not found',
+            ], 404);
+        }
+    
+        // Perbarui status reservasi menjadi "Rating"
+        $reservation->update(['reservation_status' => 'Rating']);
+
     }
 
 }

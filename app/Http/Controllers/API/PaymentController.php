@@ -147,4 +147,44 @@ class PaymentController extends Controller
         }
     }
 
+    public function googlepay(Request $request)
+{
+    // Set Stripe API key
+    Stripe::setApiKey(env('STRIPE_SECRET'));
+
+    // Validasi input
+    $validated = $request->validate([
+        'payable_type' => 'required',
+        'payable_id' => 'required',
+        'user_id' => 'required|exists:users,user_id',
+        'amount' => 'required|numeric|min:0',
+        'payment_method' => 'required|in:Credit Card,E-Wallet,Google Pay',
+        'stripeToken' => 'required|string',
+    ]);
+
+    // Tambahkan status pembayaran dan tanggal transaksi
+    $validated['payment_status'] = 'Completed';
+    $validated['transaction_date'] = Carbon::now();
+
+    try {
+        // Membuat charge dengan Stripe
+        $charge = Charge::create([
+            'amount' => $validated['amount'] * 100, // Stripe menerima jumlah dalam cent (contoh: $10 -> 1000)
+            'currency' => 'usd',
+            'source' => $validated['stripeToken'],
+            'description' => 'Payment for Order',
+        ]);
+
+        // Simpan ke dalam database
+        $payment = Payments::create($validated);
+
+        // Jika pembayaran berhasil
+        return response()->json(['success' => true, 'message' => 'Payment successful!']);
+    } catch (\Exception $e) {
+        // Tangani jika ada error
+        return response()->json(['success' => false, 'message' => $e->getMessage()]);
+    }
+}
+
+
 }

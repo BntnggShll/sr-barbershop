@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('payment_id');
             $table->morphs('payable');
             $table->foreignId('user_id')->references('user_id')->on('users')->onDelete('cascade')->nullable();
-            $table->decimal('amount', 8, 2);
+            $table->integer('amount');
             $table->enum('payment_method', ['Credit Card', 'E-Wallet']);
             $table->enum('payment_status', ['Pending', 'Completed', 'Failed']);
             $table->timestamp('transaction_date');
