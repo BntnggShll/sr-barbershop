@@ -88,103 +88,74 @@ class PaymentController extends Controller
 
         return response()->json(['message' => 'Payment record deleted successfully']);
     }
-    // public function createDanaPayment(Request $request)
-    // {
-    //     \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-    //     \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
 
-    //     $params = [
-    //         'payment_type' => 'gopay', // DANA juga menggunakan struktur e-wallet seperti GoPay
-    //         'transaction_details' => [
-    //             'order_id' => 'order-' . uniqid(),
-    //             'gross_amount' => $request->amount,
-    //         ],
-    //         'customer_details' => [
-    //             'email' => $request->email,
-    //             'phone' => $request->phone,
-    //         ],
-    //     ];
-
-    //     try {
-    //         $payment = \Midtrans\CoreApi::charge($params);
-
-    //         return response()->json($payment);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['error' => $e->getMessage()], 500);
-    //     }
-    // }
 
     public function stripePost(Request $request)
     {
-        // Set Stripe API key
         Stripe::setApiKey(env('STRIPE_SECRET'));
-        $validated = $request->validate([
-            'payable_type' => 'required',
-            'payable_id' => 'required',
-            'user_id' => 'required|exists:users,user_id',
-            'amount' => 'required|numeric|min:0',
-            'payment_method' => 'required|in:Credit Card,E-Wallet',
-        ]);
-
-        $validated['payment_status'] = 'Completed';
-        $validated['transaction_date'] = Carbon::now();
-        $payment = Payments::create($validated);
-
+    
+        // Periksa apakah data yang dikirim adalah array atau objek tunggal
+        $isArray = is_array($request->input('payments'));
+    
+        // Tentukan validasi berdasarkan tipe data
+        $rules = $isArray
+            ? [
+                'payments' => 'required|array',
+                'payments.*.payable_type' => 'required',
+                'payments.*.payable_id' => 'required',
+                'payments.*.user_id' => 'required|exists:users,user_id',
+                'payments.*.amount' => 'required|numeric|min:0',
+                'payments.*.payment_method' => 'required|in:Credit Card,E-Wallet',
+            ]
+            : [
+                'payable_type' => 'required',
+                'payable_id' => 'required',
+                'user_id' => 'required|exists:users,user_id',
+                'amount' => 'required|numeric|min:0',
+                'payment_method' => 'required|in:Credit Card,E-Wallet',
+            ];
+    
+        $validated = $request->validate($rules);
+    
+        $responses = [];
+    
+        if ($isArray) {
+            // Proses setiap item dalam array
+            foreach ($validated['payments'] as $paymentData) {
+                $responses[] = $this->processPayment($paymentData, $request->stripeToken);
+            }
+        } else {
+            // Proses objek tunggal
+            $responses[] = $this->processPayment($validated, $request->stripeToken);
+        }
+    
+        return response()->json($responses);
+    }
+    
+    private function processPayment($paymentData, $stripeToken)
+    {
         try {
-            // Membuat charge dengan token yang diterima
-            $charge = Charge::create([
-                'amount' => $request->amount, // $100
+            $paymentData['payment_status'] = 'Completed';
+            $paymentData['transaction_date'] = Carbon::now();
+    
+            // Simpan data pembayaran
+            Payments::create($paymentData);
+    
+            // Membuat charge ke Stripe
+            Charge::create([
+                'amount' => $paymentData['amount'],
                 'currency' => 'usd',
-                'source' => $request->stripeToken,
+                'source' => $stripeToken,
                 'description' => 'Payment for Order',
             ]);
-
-            // Jika pembayaran berhasil
-            return response()->json(['success' => true]);
+    
+            return ['success' => true, 'payable_id' => $paymentData['payable_id']];
         } catch (\Exception $e) {
-            // Tangani jika ada error
-            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+            return ['success' => false, 'message' => $e->getMessage(), 'payable_id' => $paymentData['payable_id']];
         }
     }
+    
 
-    public function googlepay(Request $request)
-{
-    // Set Stripe API key
-    Stripe::setApiKey(env('STRIPE_SECRET'));
-
-    // Validasi input
-    $validated = $request->validate([
-        'payable_type' => 'required',
-        'payable_id' => 'required',
-        'user_id' => 'required|exists:users,user_id',
-        'amount' => 'required|numeric|min:0',
-        'payment_method' => 'required|in:Credit Card,E-Wallet,Google Pay',
-        'stripeToken' => 'required|string',
-    ]);
-
-    // Tambahkan status pembayaran dan tanggal transaksi
-    $validated['payment_status'] = 'Completed';
-    $validated['transaction_date'] = Carbon::now();
-
-    try {
-        // Membuat charge dengan Stripe
-        $charge = Charge::create([
-            'amount' => $validated['amount'] * 100, // Stripe menerima jumlah dalam cent (contoh: $10 -> 1000)
-            'currency' => 'usd',
-            'source' => $validated['stripeToken'],
-            'description' => 'Payment for Order',
-        ]);
-
-        // Simpan ke dalam database
-        $payment = Payments::create($validated);
-
-        // Jika pembayaran berhasil
-        return response()->json(['success' => true, 'message' => 'Payment successful!']);
-    } catch (\Exception $e) {
-        // Tangani jika ada error
-        return response()->json(['success' => false, 'message' => $e->getMessage()]);
-    }
-}
-
+  
 
 }

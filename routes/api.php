@@ -47,7 +47,6 @@ Route::post('/payments', [PaymentController::class, 'store']);
 Route::put('/payments/{id}', [PaymentController::class, 'update']);
 Route::delete('/payments/{id}', [PaymentController::class, 'destroy']);
 Route::post('/stripe', [PaymentController::class, 'stripePost']);
-Route::post('/googlepay', [PaymentController::class, 'googlepay']);
 
 // products
 Route::get('/products', [ProductController::class, 'index']);
@@ -55,6 +54,7 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::post('/products', [ProductController::class, 'store']);
 Route::post('/products/{id}', [ProductController::class, 'update']);
 Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+Route::put('/stock/{id}', [ProductController::class, 'stock']);
 // reservations
 Route::get('/reservations', [ReservationsController::class, 'index']);
 Route::get('/reservations/{id}', [ReservationsController::class, 'show']);
