@@ -69,22 +69,21 @@ class ReservationsController extends Controller
 
     // Menampilkan semua data reservasi
     public function index()
-    {
-        // Ambil semua jadwal terkait
-        $schedules = Schedules::all();
+{
+    // Ambil semua jadwal terkait
+    $schedules = Schedules::all();
 
-        
+    // Ambil semua reservasi berdasarkan user_id dengan relasi
+    $reservations = Reservations::with(['service', 'user', 'worker', 'schedule'])
+        ->get();
 
-        // Ambil semua reservasi berdasarkan user_id dengan relasi
-        $reservations = Reservations::with(['service', 'user', 'worker', 'schedule'])
-            ->get();
+    // Tambahkan estimasi ke setiap reservasi
+    $reservations = $reservations->map(function ($reservation) use ($schedules) {
+        // Cari jadwal yang cocok dengan schedule_id pada reservasi
+        $schedule = $schedules->firstWhere('schedule_id', $reservation->schedule_id);
 
-        // Tambahkan estimasi ke setiap reservasi
-        $reservations = $reservations->map(function ($reservation) use ($schedules) {
-            // Cari jadwal yang cocok dengan schedule_id pada reservasi
-            $schedule = $schedules->firstWhere('schedule_id', $reservation->schedule_id);
-
-            if ($schedule) {
+        if ($schedule) {
+            try {
                 // Gabungkan tanggal dan waktu menjadi objek Carbon
                 $availableDateTime = Carbon::createFromFormat(
                     'Y-m-d H:i:s',
@@ -93,27 +92,43 @@ class ReservationsController extends Controller
 
                 // Hitung selisih waktu dalam menit
                 $currentTime = now();
-                $differenceInMinutes = $availableDateTime->diffInMinutes($currentTime, false);
-                $differenceInHours = (int) abs($differenceInMinutes / 60);
+                if ($availableDateTime->isPast()) {
+                    $differenceInMinutes = $currentTime->diffInMinutes($availableDateTime, false);
+                } else {
+                    $differenceInMinutes = $availableDateTime->diffInMinutes($currentTime);
+                }
 
-                // Tentukan estimasi
-                $reservation->estimasi = $differenceInMinutes > 0
-                    ? "{$differenceInMinutes} menit ({$differenceInHours} jam) dari sekarang"
-                    : abs($differenceInMinutes) . " menit (" . abs($differenceInHours) . " jam) yang lalu";
-            } else {
-                $reservation->estimasi = "Jadwal tidak ditemukan";
+                // Hitung selisih waktu dalam format desimal (jam.menit)
+                $hours = floor($differenceInMinutes / 60);
+                $minutes = $differenceInMinutes % 60;
+                $timeInDecimal = $hours + round($minutes / 60, 2);
+
+                if ($availableDateTime->isPast()) {
+                    $reservation->estimasi = number_format($timeInDecimal, 2) . " yang lalu";
+                } else {
+                    $reservation->estimasi = number_format($timeInDecimal, 2) . " dari sekarang";
+                }
+            } catch (\Exception $e) {
+                // Penanganan jika format tanggal tidak sesuai
+                $reservation->estimasi = "Format waktu tidak valid";
             }
+        } else {
+            $reservation->estimasi = "Jadwal tidak ditemukan";
+        }
 
-            return $reservation;
-        });
+        return $reservation;
+    });
 
-        $reservations = $reservations->map(function ($reservations) {
-            $reservations->formatted_date = Carbon::parse($reservations->updated_at)->format('M d Y H:i');
-            return $reservations;
-        });
-        // Mengembalikan data dalam format JSON
-        return response()->json(['data' => $reservations]);
-    }
+    // Format ulang tanggal pada setiap reservasi
+    $reservations = $reservations->map(function ($reservation) {
+        $reservation->formatted_date = Carbon::parse($reservation->updated_at)->format('M d Y H:i');
+        return $reservation;
+    });
+
+    // Mengembalikan data dalam format JSON
+    return response()->json(['data' => $reservations]);
+}
+
 
 
     // Menampilkan data reservasi berdasarkan ID
