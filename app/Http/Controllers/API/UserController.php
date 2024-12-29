@@ -116,6 +116,7 @@ class UserController extends Controller
         ));
 
 
+        // $user->refresh();
         // Membuat payload untuk token JWT
         $payload = [
             'iss' => "http://localhost:3000/login", // Ganti dengan issuer Anda
