@@ -31,14 +31,7 @@ class ServiceController extends Controller
 
         return response()->json([
             'message' => 'Service created successfully',
-            'data' => [
-                'service_id'=> $service->service_id,
-                'service_name' => $service->service_name,
-                'description' => $service->description,
-                'price' => $service->price,
-                'duration' => $service->duration,
-                'image' => isset($imagePath) ? asset('storage/' . $imagePath) : null,
-            ],
+            'data' => $service,
             'success' => true
         ], 201);
     }
@@ -65,14 +58,7 @@ class ServiceController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => [
-                'service_id'=> $service->service_id,
-                'service_name' => $service->service_name,
-                'description' => $service->description,
-                'price' => $service->price,
-                'duration' => $service->duration,
-                'image' => $service->image ? asset('storage/' . $service->image) : null,
-            ]
+            'data' => $service
         ]);
     }
 
@@ -107,14 +93,7 @@ class ServiceController extends Controller
 
         return response()->json([
             'message' => 'Service updated successfully',
-            'data' => [
-                'service_id'=> $service->service_id,
-                'service_name' => $service->service_name,
-                'description' => $service->description,
-                'price' => $service->price,
-                'duration' => $service->duration,
-                'image' => $service->image ? asset('storage/' . $service->image) : null,
-            ],
+            'data' => $service,
             'success' => true
         ]);
     }
