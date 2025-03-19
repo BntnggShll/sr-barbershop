@@ -79,7 +79,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'price' => 'numeric|min:0',
             'stock' => 'integer|min:0',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'image|mimes:jpeg,png,jpg,gif',
         ]);
         if ($request->hasFile('image')) {
             if ($product->image) {
@@ -95,7 +95,7 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'product' => $data,
-        ]);
+        ]); 
     }
 
 

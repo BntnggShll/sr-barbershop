@@ -39,7 +39,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('https://api.proyekutamami3a.biz.id/').'/storage',
+            'url' => env('https://api.proyekutamami3a.biz.id').'/storage',
             'visibility' => 'public',
             'throw' => false,
         ],
